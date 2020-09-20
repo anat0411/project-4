@@ -1,0 +1,114 @@
+CREATE database supermarket;
+
+GRANT ALL PRIVILEGES ON supermarket.* TO 'anat_project'@'localhost';
+
+FLUSH PRIVILEGES;
+
+ALTER USER 'anat_project'@'localhost' IDENTIFIED WITH mysql_native_password BY '81728172';
+
+
+
+CREATE TABLE supermarket.customers (
+id INT UNSIGNED unique key AUTO_INCREMENT,
+firstname VARCHAR(30) NOT NULL,
+lastname VARCHAR(30) NOT NULL,
+email VARCHAR(50) NOT NULL,
+customer_id_number INT PRIMARY KEY NOT NULL,
+password VARCHAR(100) NOT NULL,
+city VARCHAR(50) NOT NULL,
+street VARCHAR(50) NOT NULL
+)
+INSERT INTO supermarket.customers (firstname, lastname, email, customer_id_number, password, city, street)
+VALUES ("Rina", "Cohen", "rinacohen@gmail.com", 987654321, 1010, "Haifa", "Balfur")
+
+CREATE TABLE supermarket.admin (
+id INT UNSIGNED unique key AUTO_INCREMENT,
+firstname VARCHAR(30) NOT NULL,
+lastname VARCHAR(30) NOT NULL,
+email VARCHAR(50) NOT NULL,
+admin_id_number INT PRIMARY KEY NOT NULL,
+password VARCHAR(100) NOT NULL
+)
+INSERT INTO supermarket.admin (firstname, lastname, email, admin_id_number, password)
+ VALUES ("Anat", "Aig", "anataig@gmail.com", 333333333, "1010")
+
+CREATE TABLE supermarket.category (
+category_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT NOT NULL,
+category_name VARCHAR(60) NOT NULL
+)
+INSERT INTO supermarket.category (category_name) VALUES ("Meat & Fish")
+
+
+CREATE TABLE supermarket.products (
+product_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT NOT NULL,
+name VARCHAR(60) NOT NULL,
+category_id INT UNSIGNED NOT NULL,
+INDEX `idx_category` (category_id),
+CONSTRAINT `fk_product_category` 
+FOREIGN KEY (category_id)
+REFERENCES supermarket.category (category_id) ON UPDATE CASCADE ON DELETE RESTRICT,
+product_price INT NOT NULL,
+product_image VARCHAR(200)
+)
+INSERT INTO supermarket.products (name, category_id, product_price)
+                VALUES ("Chicken", 3, 60)
+
+CREATE TABLE supermarket.carts (
+cart_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT NOT NULL,
+customer_id_number INT NOT NULL,
+INDEX `idx_customer_id_number` (customer_id_number),
+CONSTRAINT `fk_cart_customer` 
+FOREIGN KEY (customer_id_number)
+REFERENCES supermarket.customers (customer_id_number) ON UPDATE CASCADE ON DELETE RESTRICT,
+create_date DATETIME DEFAULT CURRENT_TIMESTAMP
+)
+-- INSERT INTO supermarket.carts (customer_id_number)
+--                 VALUES (123456789)
+
+CREATE TABLE supermarket.cart_items (
+item_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT NOT NULL,
+product_id INT UNSIGNED NOT NULL,
+product_units INT UNSIGNED NOT NULL,
+item_price INT NOT NULL,
+cart_id INT UNSIGNED NOT NULL,
+
+INDEX `idx_cart_items_products` (product_id),
+INDEX `idx_cart_items_carts` (cart_id),
+
+CONSTRAINT `fk_cart_items_products` 
+FOREIGN KEY (product_id)
+REFERENCES supermarket.products (product_id) ON UPDATE CASCADE ON DELETE RESTRICT,
+
+CONSTRAINT `fk_cart_items_carts` 
+FOREIGN KEY (cart_id)
+REFERENCES supermarket.carts (cart_id) ON UPDATE CASCADE ON DELETE RESTRICT
+)
+
+     INSERT INTO supermarket.cart_items (product_id, product_units, item_price, cart_id)
+             VALUES (3, 1, 60, 1)
+
+CREATE TABLE supermarket.orders (
+order_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT NOT NULL,
+
+customer_id_number INT NOT NULL,
+INDEX `idx_customer_id_number` (customer_id_number),
+CONSTRAINT `fk_order_customer` 
+FOREIGN KEY (customer_id_number)
+REFERENCES supermarket.customers (customer_id_number) ON UPDATE CASCADE ON DELETE RESTRICT,
+
+cart_id  INT UNSIGNED NOT NULL,
+INDEX `idx_cart_id` (cart_id),
+CONSTRAINT `fk_cart_order` 
+FOREIGN KEY (cart_id)
+REFERENCES supermarket.carts (cart_id) ON UPDATE CASCADE ON DELETE RESTRICT,
+
+total_price INT UNSIGNED NOT NULL,
+city VARCHAR(50) NOT NULL,
+street VARCHAR(50) NOT NULL,
+full_address VARCHAR(100) GENERATED ALWAYS AS (CONCAT(city,' ',street)),
+order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+delivery_date DATETIME NOT NULL
+)
+
+INSERT INTO supermarket.orders (customer_id_number,  cart_id, total_price, city, street, delivery_date) 
+VALUES (123456789, 1, 150, "Eilat", "Shezif", "2020-10-10")
