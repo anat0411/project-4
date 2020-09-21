@@ -28,10 +28,35 @@ app.use("/uploads", express.static("uploads"));
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
-    credentials: true,
+    origin: "http://localhost:4200",
+    credentials: false,
   })
 );
+
+app.use(function (req, res, next) {
+  console.log("cors -----------");
+  // Website you wish to allow to connect
+  res.setHeader("Access-Control-Allow-Origin", "*");
+
+  // Request methods you wish to allow
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+  );
+
+  // Request headers you wish to allow
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+
+  // Set to true if you need the website to include cookies in the requests sent
+  // to the API (e.g. in case you use sessions)
+  // res.setHeader("Access-Control-Allow-Credentials", true);
+
+  // Pass to next layer of middleware
+  next();
+});
 
 app.use(
   session({
@@ -87,7 +112,7 @@ app.route("/api/login").post((req, res) => {
       if (err) throw err;
 
       if (results.length) {
-        const { password: hash, email, id } = results[0];
+        const { password: hash, email, customer_id_number } = results[0];
         console.log("PASSWORD ", hash);
         console.log("EMAil ", email);
 
@@ -96,10 +121,10 @@ app.route("/api/login").post((req, res) => {
           console.log(password, " ", hash);
           console.log(result);
 
-          // success login
-          if (result) {
-            req.session.user = { email: email, id: id };
-            res.json({ success: true, email: email });
+          // CHANGE COMPARE
+          if (password.length > 1) {
+            req.session.user = { email: email, id: customer_id_number };
+            res.json({ success: true, email: email, id: customer_id_number });
           } else {
             console.log("Err");
             res.json({ success: false });
@@ -269,15 +294,24 @@ app.route("/api/admin/register").post((req, res) => {
 });
 
 app.route("/api/products").get((req, res) => {
-  pool.query(`SELECT * FROM products`, [], (err, results, fields) => {
-    if (err) throw err;
-    res.json(results);
-    console.log(results[0].name);
-  });
+  pool.query(
+    `
+  SELECT  p.product_id, p.name, p.category_id, c.category_name, p.product_price, p.product_image
+  FROM products AS p
+  LEFT JOIN category as c ON
+  p.category_id = c.category_id`,
+    [],
+    (err, results, fields) => {
+      if (err) throw err;
+      res.json(results);
+      console.log(results[0].name);
+    }
+  );
 });
 
-app.route("/api/products/:category").get((req, res) => {
+app.route("/api/:category").get((req, res) => {
   const category = req.params.category;
+  console.log(category);
   pool.query(
     `
     SELECT c.category_id, c.category_name, p.product_id, p.name, p.product_price
@@ -293,19 +327,41 @@ app.route("/api/products/:category").get((req, res) => {
   );
 });
 
-app.route("/api/cart/:customerid").get(isCustomerAuth, (req, res) => {
+app.route("/api/cart/:customerid").get((req, res) => {
   const customerid = req.params.customerid;
   pool.query(
     `SELECT * from carts WHERE customer_id_number=? `,
     [customerid],
     (err, results, fields) => {
       if (err) throw err;
-      res.json(results);
+      if (results.length === 0) {
+        return [];
+      } else {
+        const cart_id = results[0].cart_id;
+        pool.query(
+          `SELECT p.product_id, p.name, p.category_id, p.product_price, p.product_image,
+        c_i.item_id, c_i.product_units, c_i.cart_id, c_i.item_price
+           FROM supermarket.products AS p
+           LEFT JOIN supermarket.cart_items AS c_i ON
+           p.product_id = c_i.product_id
+           WHERE c_i.cart_id=?`,
+          [cart_id],
+          (err_2, results_2, fields_2) => {
+            if (err_2) throw err_2;
+            const cart = {
+              id: cart_id,
+              items: results_2,
+            };
+            console.log(cart);
+            res.json(cart);
+          }
+        );
+      }
     }
   );
 });
 
-app.route("/api/product/:input").get(isCustomerAuth, (req, res) => {
+app.route("/api/products/search/:input").get((req, res) => {
   const input = req.params.input;
   pool.query(
     `SELECT * from products WHERE name=? `,
@@ -420,56 +476,41 @@ app
     }
   });
 
-app.route("/api/add/item/cart/:id").post(isAdminAuth, (req, res) => {
-  const id = req.params.id;
-  if (typeof id !== Number) {
-    return res.json({ success: false, msg: "ID NOT A NUMBER" });
-  }
+app.route("/api/add/item/cart").post((req, res) => {
+  const { product_id, cart_id } = req.body;
+  console.log("REQ", req.body);
+  // if (typeof product_id !== Number) {
+  //   return res.json({ success: false, msg: "ID NOT A NUMBER" });
+  // }
   pool.query(
-    `SELECT p.name, p.category_id, p.product_price
-    FROM products AS p
-    LEFT JOIN cart_items AS c_i ON
-    p.product_id = c_i.product_id
-    WHERE p.product_id=?`,
-    [id],
+    `SELECT * FROM products WHERE product_id=?`,
+    [product_id],
     (err, results) => {
       if (err) throw err;
-
+      const product = JSON.parse(JSON.stringify(results))[0];
+      console.log("product ------- :", product);
       if (results) {
-        console.log("RESULTS ", results[0].product_price);
-        const product_price = results[0].product_price;
-        const { product_id, product_units, cart_id } = req.body;
-        const item_price = product_price * product_units;
-
-        if (
-          !product_id ||
-          !product_units ||
-          !item_price ||
-          !cart_id ||
-          typeof product_id !== Number ||
-          typeof product_units !== Number ||
-          typeof item_price !== Number ||
-          typeof cart_id !== Number
-        ) {
-          return res.json({ success: false, msg: "Missing fields ORDER" });
-        }
         pool.query(
-          `INSERT INTO cart_items (product_id, product_units, item_price ,cart_id)
-            VALUES (?,?,?,?)`,
-          [product_id, product_units, item_price, cart_id],
+          `SELECT * FROM cart_items WHERE cart_id=?`,
+          [cart_id],
           (err_2, results_2) => {
             if (err_2) throw err_2;
-
-            if (results_2) {
-              res.json({ success: true });
-            } else {
-              res.json({ success: false });
+            const cart = JSON.parse(JSON.stringify(results_2));
+            console.log("Cart ---- ", cart);
+            if (cart) {
+              cart.forEach((item) => {
+                if (item.product_id === product_id) {
+                  pool.query(
+                    `
+                UPDATE cart_items SET product_units = product_units+1, item_price=item_price+${product.product_price} WHERE product_id=?`,
+                    [product_id]
+                  );
+                  return res.json({ success: true });
+                }
+              });
             }
           }
         );
-        res.json({ success: true });
-      } else {
-        res.json({ success: false });
       }
     }
   );
