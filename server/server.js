@@ -97,6 +97,7 @@ app.route("/auth/admin/verify").get(isAdminAuth, (req, res) => {
 
 app.route("/api/login").post((req, res) => {
   const { email, password } = req.body;
+  console.log("BODY LOGIN --------- ", req.body.email);
 
   if (!email || !password || !email.includes("@")) {
     return res.json({ success: false, msg: "Missing data" });
@@ -124,6 +125,7 @@ app.route("/api/login").post((req, res) => {
           // CHANGE COMPARE
           if (password.length > 1) {
             req.session.user = { email: email, id: customer_id_number };
+            console.log("SESSION LOGIN -------", req.session.user.id);
             res.json({ success: true, email: email, id: customer_id_number });
           } else {
             console.log("Err");
@@ -478,6 +480,8 @@ app
 
 app.route("/api/add/item/cart").post((req, res) => {
   const { product_id, cart_id } = req.body;
+  const customerId = req.session.user.id;
+  console.log("SESSION------------", req.session.user);
   console.log("REQ", req.body);
   // if (typeof product_id !== Number) {
   //   return res.json({ success: false, msg: "ID NOT A NUMBER" });
@@ -508,6 +512,26 @@ app.route("/api/add/item/cart").post((req, res) => {
                   return res.json({ success: true });
                 }
               });
+            } else {
+              pool.query(
+                `INSERT INTO carts (customer_id_number) VALUES (?)`,
+                [customerId],
+                (err_3, results_3) => {
+                  if (err_3) throw err_3;
+                  console.log(results_3);
+                  if (results_3) {
+                    pool.query(
+                      `INSERT INTO cart_items (product_id, product_units, item_price, cart_id) VALUES (?,?,?,?)`,
+                      [product_id, 1, product.product_price, cart_id],
+                      (err_4, results_4) => {
+                        if (err_4) throw err_4;
+                        console.log(results_4);
+                        return res.json({ success: true });
+                      }
+                    );
+                  }
+                }
+              );
             }
           }
         );
