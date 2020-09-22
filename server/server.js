@@ -29,14 +29,14 @@ app.use("/uploads", express.static("uploads"));
 app.use(
   cors({
     origin: "http://localhost:4200",
-    credentials: false,
+    credentials: true,
   })
 );
 
 app.use(function (req, res, next) {
   console.log("cors -----------");
   // Website you wish to allow to connect
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  // res.setHeader("Access-Control-Allow-Origin", "*");
 
   // Request methods you wish to allow
   res.setHeader(
@@ -125,7 +125,7 @@ app.route("/api/login").post((req, res) => {
           // CHANGE COMPARE
           if (password.length > 1) {
             req.session.user = { email: email, id: customer_id_number };
-            console.log("SESSION LOGIN -------", req.session.user.id);
+            console.log("SESSION LOGIN ====================", req.session);
             res.json({ success: true, email: email, id: customer_id_number });
           } else {
             console.log("Err");
@@ -203,33 +203,33 @@ app.get("/api/admin/logout", isAdminAuth, (req, res) => {
 
 app.route("/api/register").post((req, res) => {
   const {
-    firstname,
-    lastname,
+    firstName,
+    lastName,
     email,
-    customer_id_number,
+    customerIdNumber,
     password,
     city,
     street,
   } = req.body;
-  if (
-    !firstname ||
-    !lastname ||
-    !email ||
-    !customer_id_number ||
-    !password ||
-    !city ||
-    !street ||
-    typeof firstname !== String ||
-    typeof lastname !== String ||
-    typeof email !== String ||
-    typeof customer_id_number !== Number ||
-    typeof password !== String ||
-    typeof city !== String ||
-    typeof street !== String ||
-    !email.includes("@")
-  ) {
-    return res.json({ success: false, msg: "Missing data" });
-  }
+  // if (
+  //   !firstname ||
+  //   !lastname ||
+  //   !email ||
+  //   !customer_id_number ||
+  //   !password ||
+  //   !city ||
+  //   !street ||
+  //   typeof firstname !== String ||
+  //   typeof lastname !== String ||
+  //   typeof email !== String ||
+  //   typeof customer_id_number !== Number ||
+  //   typeof password !== String ||
+  //   typeof city !== String ||
+  //   typeof street !== String ||
+  //   !email.includes("@")
+  // ) {
+  //   return res.json({ success: false, msg: "Missing data" });
+  // }
 
   bcrypt.hash(password, 10, (err, hash) => {
     if (err) throw err;
@@ -238,7 +238,7 @@ app.route("/api/register").post((req, res) => {
       INSERT INTO customers (firstname, lastname, email, customer_id_number, password, city, street)
       VALUES (?,?,?,?,?,?,?);
               `,
-      [firstname, lastname, email, customer_id_number, hash, city, street],
+      [firstName, lastName, email, customerIdNumber, hash, city, street],
       (err, results) => {
         if (err) {
           if (err.code === "ER_DUP_ENTRY") {
@@ -306,7 +306,7 @@ app.route("/api/products").get((req, res) => {
     (err, results, fields) => {
       if (err) throw err;
       res.json(results);
-      console.log(results[0].name);
+      // console.log(results[0].name);
     }
   );
 });
@@ -354,7 +354,7 @@ app.route("/api/cart/:customerid").get((req, res) => {
               id: cart_id,
               items: results_2,
             };
-            console.log(cart);
+            // console.log(cart);
             res.json(cart);
           }
         );
@@ -481,7 +481,10 @@ app
 app.route("/api/add/item/cart").post((req, res) => {
   const { product_id, cart_id } = req.body;
   const customerId = req.session.user.id;
-  console.log("SESSION------------", req.session.user);
+  console.log(
+    "SESSION-----------------------------------------------------------------",
+    req.session
+  );
   console.log("REQ", req.body);
   // if (typeof product_id !== Number) {
   //   return res.json({ success: false, msg: "ID NOT A NUMBER" });
@@ -501,9 +504,11 @@ app.route("/api/add/item/cart").post((req, res) => {
             if (err_2) throw err_2;
             const cart = JSON.parse(JSON.stringify(results_2));
             console.log("Cart ---- ", cart);
-            if (cart) {
+            if (cart.length > 0) {
+              let added = false;
               cart.forEach((item) => {
                 if (item.product_id === product_id) {
+                  added = true;
                   pool.query(
                     `
                 UPDATE cart_items SET product_units = product_units+1, item_price=item_price+${product.product_price} WHERE product_id=?`,
@@ -512,20 +517,39 @@ app.route("/api/add/item/cart").post((req, res) => {
                   return res.json({ success: true });
                 }
               });
+              console.log("  ADDED-----------------", added);
+              if (!added) {
+                console.log(
+                  "query data : ",
+                  product_id,
+                  1,
+                  product.product_price,
+                  cart_id
+                );
+                pool.query(
+                  `INSERT INTO cart_items (product_id, product_units, item_price, cart_id) VALUES (?,?,?,?)`,
+                  [product_id, 1, product.product_price, cart_id],
+                  (err_3, results_3) => {
+                    if (err_3) throw err_3;
+                    return res.json({ success: true });
+                  }
+                );
+              }
             } else {
+              console.log(customerId);
               pool.query(
                 `INSERT INTO carts (customer_id_number) VALUES (?)`,
                 [customerId],
-                (err_3, results_3) => {
-                  if (err_3) throw err_3;
-                  console.log(results_3);
-                  if (results_3) {
+                (err_4, results_4) => {
+                  if (err_4) throw err_4;
+                  console.log("new cart: +++++++++++", results_4);
+                  if (results_4) {
                     pool.query(
                       `INSERT INTO cart_items (product_id, product_units, item_price, cart_id) VALUES (?,?,?,?)`,
                       [product_id, 1, product.product_price, cart_id],
-                      (err_4, results_4) => {
-                        if (err_4) throw err_4;
-                        console.log(results_4);
+                      (err_5, results_5) => {
+                        if (err_5) throw err_5;
+                        console.log(results_5);
                         return res.json({ success: true });
                       }
                     );

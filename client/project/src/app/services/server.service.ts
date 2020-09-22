@@ -17,12 +17,12 @@ export class ServerService {
   constructor(private http: HttpClient) {
     this.searchData = new BehaviorSubject<[Product]>([
       {
-        product_id: 1,
-        name: '1',
-        category_id: 1,
-        category_name: '1',
-        product_price: 1,
-        product_image: '1',
+        product_id: null,
+        name: null,
+        category_id: null,
+        category_name: null,
+        product_price: null,
+        product_image: null,
       },
     ]);
     //initial value
@@ -54,26 +54,52 @@ export class ServerService {
 
   getSearchProducts(input) {
     return this.http.get(
-      `${environment.baseUrl.server}/products/search/${input}`
+      `${environment.baseUrl.server}/products/search/${input}`,
+      {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
     );
   }
 
   getAllProducts() {
-    return this.http.get(`${environment.baseUrl.server}/products`);
+    return this.http.get(`${environment.baseUrl.server}/products`, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   }
 
   getMilkEggesProducts() {
     console.log(`${environment.baseUrl.server}/Milk,Eggs`);
-    return this.http.get(`${environment.baseUrl.server}/Milk,Eggs`);
+    return this.http.get(`${environment.baseUrl.server}/Milk,Eggs`, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   }
 
   getMeatFishProducts() {
     console.log(`${environment.baseUrl.server}/Meat,Fish`);
-    return this.http.get(`${environment.baseUrl.server}/Meat,Fish`);
+    return this.http.get(`${environment.baseUrl.server}/Meat,Fish`, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   }
   getVegatablesFruitsProducts() {
     console.log(`${environment.baseUrl.server}/Vegatables,Fruits`);
-    return this.http.get(`${environment.baseUrl.server}/Vegatables,Fruits`);
+    return this.http.get(`${environment.baseUrl.server}/Vegatables,Fruits`, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   }
 
   addProductToCart(productId, cartId) {
@@ -83,11 +109,19 @@ export class ServerService {
     };
     console.log(body);
     return this.http.post(`${environment.baseUrl.server}/add/item/cart`, body, {
-      withCredentials: false,
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
   }
 
   getCart(customerid) {
-    return this.http.get(`${environment.baseUrl.server}/cart/${customerid}`);
+    return this.http.get(`${environment.baseUrl.server}/cart/${customerid}`, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   }
 }

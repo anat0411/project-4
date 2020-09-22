@@ -47,7 +47,7 @@ export class LoginComponent implements OnInit {
         `${environment.baseUrl.server}/login`,
         { email, password },
         {
-          withCredentials: false,
+          withCredentials: true,
         }
       )
       .subscribe(
@@ -55,6 +55,7 @@ export class LoginComponent implements OnInit {
           console.log(resp);
           const customerData = { email: resp.email, id: resp.id };
           this.auth.setCustomer(customerData);
+
           console.log('LOGGED IN_____________');
           this.onLogin();
         },

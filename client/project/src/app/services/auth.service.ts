@@ -26,6 +26,14 @@ export class AuthService {
   }
 
   setCustomer(data): void {
+    window.sessionStorage.setItem('id', data.id);
+    window.sessionStorage.setItem('email', data.email);
     this.customer.next(data);
+  }
+
+  getCustomerDataFromSession() {
+    const id = window.sessionStorage.getItem('id');
+    const email = window.sessionStorage.getItem('email');
+    this.setCustomer({ id, email });
   }
 }

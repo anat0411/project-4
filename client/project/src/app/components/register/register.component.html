@@ -1,47 +1,81 @@
 <h1>Register</h1>
 <div class="row">
   <div class="col-md-6">
-    <form>
+    <form [formGroup]="registerForm" (ngSubmit)="onRegisterSubmit()">
       <div class="form-group">
-        <label for="firstname"> First Name </label>
+        <label for="firstName"> First Name </label>
         <input
           type="text"
           class="form-control"
-          name="firstname"
-          id="firstname"
+          formControlName="firstName"
+          id="firstName"
+        />
+        <div
+          *ngIf="registerForm.get('firstName').invalid && showErrors"
+          class="alert alert-danger"
+        >
+          <div *ngIf="registerForm.get('firstName').errors.required">
+            Name is required.
+          </div>
+          <div *ngIf="registerForm.get('firstName').errors.minlength">
+            Name cannot be more than 30 characters long.
+          </div>
+          <div *ngIf="registerForm.get('firstName').errors.minlength">
+            Name must be at least 2 characters long.
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="lastName"> Last Name </label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="lastName"
+          id="lastName"
         />
       </div>
       <div class="form-group">
-        <label for="lastname"> Last Name </label>
-        <input type="text" class="form-control" name="lastname" id="lastname" />
-      </div>
-      <div class="form-group">
         <label for="email"> Email </label>
-        <input type="email" class="form-control" name="email" id="email" />
+        <input
+          type="email"
+          class="form-control"
+          formControlName="email"
+          id="email"
+        />
       </div>
       <div class="form-group">
-        <label for="customer_id_number"> ID Number </label>
+        <label for="customerIdNumber"> ID Number </label>
         <input
           type="number"
           class="form-control"
-          name="customer_id_number"
-          id="customer_id_number"
+          formControlName="customerIdNumber"
+          id="customerIdNumber"
         />
       </div>
       <div class="form-group">
         <label for="city"> City </label>
-        <input type="text" class="form-control" name="city" id="city" />
+        <input
+          type="text"
+          class="form-control"
+          formControlName="city"
+          id="city"
+        />
       </div>
       <div class="form-group">
         <label for="street"> Street </label>
-        <input type="text" class="form-control" name="street" id="street" />
+        <input
+          type="text"
+          class="form-control"
+          formControlName="street"
+          id="street"
+        />
       </div>
       <div class="form-group">
         <label for="password"> password </label>
         <input
           type="password"
           class="form-control"
-          name="password"
+          formControlName="password"
           id="password"
         />
       </div>

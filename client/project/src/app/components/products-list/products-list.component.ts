@@ -61,7 +61,7 @@ export class ProductsListComponent implements OnInit {
   }
 
   onAddToCart(product) {
-    console.log(product);
+    console.log('add new product to cart: ', product);
     this.server.setNewCartProduct(product);
   }
 }
