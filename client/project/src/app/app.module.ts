@@ -14,6 +14,7 @@ import { LoginAdminComponent } from './components/login-admin/login-admin.compon
 import { RegisterAdminComponent } from './components/register-admin/register-admin.component';
 import { SearchComponent } from './components/search/search.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { ProductsListAdminComponent } from './components/products-list-admin/products-list-admin.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
     LoginAdminComponent,
     RegisterAdminComponent,
     SearchComponent,
+    ProductsListAdminComponent,
   ],
   imports: [
     BrowserModule,
