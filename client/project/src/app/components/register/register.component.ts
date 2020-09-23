@@ -16,14 +16,45 @@ export class RegisterComponent implements OnInit {
   registerForm = new FormGroup({
     firstName: new FormControl('', [
       Validators.required,
-      Validators.minLength(4),
+      Validators.minLength(2),
+      Validators.maxLength(30),
+      Validators.pattern('^[a-zA-Z]+$'),
     ]),
-    lastName: new FormControl(),
-    email: new FormControl(),
-    city: new FormControl(),
-    street: new FormControl(),
-    customerIdNumber: new FormControl(),
-    password: new FormControl(),
+    lastName: new FormControl('', [
+      Validators.required,
+      Validators.minLength(2),
+      Validators.maxLength(30),
+      Validators.pattern('^[a-zA-Z]+$'),
+    ]),
+    email: new FormControl('', [
+      Validators.required,
+      Validators.email,
+      Validators.minLength(2),
+      Validators.maxLength(30),
+    ]),
+    city: new FormControl('', [
+      Validators.required,
+      Validators.minLength(3),
+      Validators.maxLength(30),
+      Validators.pattern('^[a-zA-Z]+$'),
+    ]),
+    street: new FormControl('', [
+      Validators.required,
+      Validators.minLength(3),
+      Validators.maxLength(50),
+      Validators.pattern('^[a-zA-Z]+$'),
+    ]),
+    customerIdNumber: new FormControl('', [
+      Validators.required,
+      Validators.minLength(8),
+      Validators.maxLength(10),
+    ]),
+    password: new FormControl('', [
+      Validators.required,
+      Validators.minLength(6),
+      Validators.maxLength(100),
+      Validators.pattern('^[a-zA-Z0-9]+$'),
+    ]),
   });
   constructor(
     private auth: AuthService,

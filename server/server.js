@@ -152,9 +152,9 @@ app.get("/api/logout", isCustomerAuth, (req, res) => {
 app.route("/api/admin/login").post((req, res) => {
   const { email, password } = req.body;
 
-  if (!email || !password || !email.includes("@")) {
-    return res.json({ success: false, msg: "Missing fields" });
-  }
+  // if (!email || !password || !email.includes("@")) {
+  //   return res.json({ success: false, msg: "Missing fields" });
+  // }
 
   pool.query(
     `
@@ -167,9 +167,6 @@ app.route("/api/admin/login").post((req, res) => {
 
       if (results.length) {
         const { password: hash, id } = results[0];
-        console.log("PASSWORD ", hash);
-        console.log("EMAil ", email);
-        console.log(password, "=", hash);
 
         bcrypt.compare(password, hash, (err, result) => {
           if (err) throw err;
