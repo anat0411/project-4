@@ -17,6 +17,12 @@
               alt="Card image cap"
             />
             <p class="card-text">price: {{ product.product_price }}₪</p>
+            <input
+              type="number"
+              class="unitsNumber"
+              id="unitsNumber"
+              (change)="product.units_to_buy = $event.target.value"
+            />
             <button class="btn btn-primary" (click)="onAddToCart(product)">
               Add to Cart
             </button>

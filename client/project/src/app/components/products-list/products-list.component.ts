@@ -64,4 +64,8 @@ export class ProductsListComponent implements OnInit {
     console.log('add new product to cart: ', product);
     this.server.setNewCartProduct(product);
   }
+
+  onNumOfUnits(event) {
+    console.log(event);
+  }
 }

@@ -1,9 +1,19 @@
 <h4>Cart</h4>
+<fa-icon
+  class="close-icon"
+  [icon]="faTimesCircle"
+  (click)="onRemoveCart(cart.id)"
+></fa-icon>
 <div class="row" *ngIf="cart">
   <div class="row" *ngFor="let item of cart.items">
     <div>
-      <div class="card-body">
+      <div class="item-container">
         <h5 class="card-title">{{ item.name }}</h5>
+        <fa-icon
+          class="close-icon"
+          [icon]="faTimesCircle"
+          (click)="onRemove(item)"
+        ></fa-icon>
         <img
           class="card-img-top"
           src="{{ item.product_image }}"
@@ -16,4 +26,19 @@
       </div>
     </div>
   </div>
+</div>
+<div class="row">
+  <h6 class="mt-3">
+    <hr />
+    Total Price: {{ totalPrice }}
+  </h6>
+</div>
+<div class="row">
+  <button
+    routerLink="/order"
+    routerLinkActive="active"
+    class="mt-3 btn btn-success"
+  >
+    Order
+  </button>
 </div>

@@ -9,11 +9,11 @@ ALTER USER 'anat_project'@'localhost' IDENTIFIED WITH mysql_native_password BY '
 
 
 CREATE TABLE supermarket.customers (
-id INT UNSIGNED unique key AUTO_INCREMENT,
+customer_id_number INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
 firstname VARCHAR(30) NOT NULL,
 lastname VARCHAR(30) NOT NULL,
 email VARCHAR(50) NOT NULL,
-customer_id_number INT PRIMARY KEY NOT NULL,
+identification_number INT NOT NULL,
 password VARCHAR(100) NOT NULL,
 city VARCHAR(50) NOT NULL,
 street VARCHAR(50) NOT NULL

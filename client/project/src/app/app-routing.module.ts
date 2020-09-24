@@ -5,6 +5,9 @@ import { RegisterComponent } from './components/register/register.component';
 import { ProductsListComponent } from './components/products-list/products-list.component';
 import { LoginAdminComponent } from './components/login-admin/login-admin.component';
 import { RegisterAdminComponent } from './components/register-admin/register-admin.component';
+import { ProductsListAdminComponent } from './components/products-list-admin/products-list-admin.component';
+import { OrderComponent } from './components/order/order.component';
+import { OrderFinishedPageComponent } from './components/order-finished-page/order-finished-page.component';
 
 const routes: Routes = [
   { path: 'admin/login', component: LoginAdminComponent },
@@ -18,6 +21,9 @@ const routes: Routes = [
     component: ProductsListComponent,
   },
   { path: 'products-list/meat&fish', component: ProductsListComponent },
+  { path: 'products-list-admin', component: ProductsListAdminComponent },
+  { path: 'order', component: OrderComponent },
+  { path: 'order/finished', component: OrderFinishedPageComponent },
 ];
 
 @NgModule({

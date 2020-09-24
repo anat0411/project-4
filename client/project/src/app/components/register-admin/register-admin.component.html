@@ -1,13 +1,13 @@
 <h1>Admin Register</h1>
 <div class="row">
   <div class="col-md-6">
-    <form>
+    <form [formGroup]="registerForm" (ngSubmit)="onAdminRegisterSubmit()">
       <div class="form-group">
         <label for="firstName"> First Name </label>
         <input
           type="text"
           class="form-control"
-          name="firstName"
+          formControlName="firstName"
           id="firstName"
         />
         <div
@@ -30,7 +30,12 @@
       </div>
       <div class="form-group">
         <label for="lastName"> Last Name </label>
-        <input type="text" class="form-control" name="lastName" id="lastname" />
+        <input
+          type="text"
+          class="form-control"
+          formControlName="lastName"
+          id="lastname"
+        />
         <div
           *ngIf="registerForm.get('lastName').invalid && showErrors"
           class="alert alert-danger"
@@ -51,7 +56,12 @@
       </div>
       <div class="form-group">
         <label for="email"> Email </label>
-        <input type="email" class="form-control" name="email" id="email" />
+        <input
+          type="email"
+          class="form-control"
+          formControlName="email"
+          id="email"
+        />
         <div
           *ngIf="registerForm.get('email').invalid && showErrors"
           class="alert alert-danger"
@@ -75,7 +85,7 @@
         <input
           type="number"
           class="form-control"
-          name="adminIdNumber"
+          formControlName="adminIdNumber"
           id="adminIdNumber"
         />
         <div
@@ -98,7 +108,7 @@
         <input
           type="password"
           class="form-control"
-          name="password"
+          formControlName="password"
           id="password"
         />
         <div

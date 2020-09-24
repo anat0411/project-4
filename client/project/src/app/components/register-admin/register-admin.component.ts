@@ -54,10 +54,10 @@ export class RegisterAdminComponent implements OnInit {
 
   onAdminRegister() {
     console.log('login admin');
-    this.router.navigateByUrl('/products-list');
+    this.router.navigateByUrl('/products-list-admin');
   }
 
-  onRegisterSubmit() {
+  onAdminRegisterSubmit() {
     this.showErrors = true;
     console.log('form valide: ', !this.registerForm.invalid);
     console.log(this.registerForm.get('firstName').invalid);
@@ -83,7 +83,7 @@ export class RegisterAdminComponent implements OnInit {
     console.log(adminData);
 
     this.http
-      .post(`${environment.baseUrl.server}/register`, adminData, {
+      .post(`${environment.baseUrl.server}/admin/register`, adminData, {
         withCredentials: true,
       })
       .subscribe(

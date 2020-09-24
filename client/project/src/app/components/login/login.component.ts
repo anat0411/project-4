@@ -17,10 +17,21 @@ import { AuthService } from '../../services/auth.service';
 })
 export class LoginComponent implements OnInit {
   invalidLogin: boolean = false;
+  showErrors: boolean = false;
 
   loginForm = new FormGroup({
-    email: new FormControl(),
-    password: new FormControl(),
+    email: new FormControl('', [
+      Validators.required,
+      Validators.email,
+      Validators.minLength(2),
+      Validators.maxLength(30),
+    ]),
+    password: new FormControl('', [
+      Validators.required,
+      Validators.minLength(6),
+      Validators.maxLength(100),
+      Validators.pattern('^[a-zA-Z0-9]+$'),
+    ]),
   });
 
   constructor(
@@ -53,10 +64,15 @@ export class LoginComponent implements OnInit {
       .subscribe(
         (resp: any) => {
           console.log(resp);
-          const customerData = { email: resp.email, id: resp.id };
+          const customerData = {
+            email: resp.email,
+            identification_number: resp.identification_number,
+            customerIdNumber: resp.customerIdNumber,
+          };
           this.auth.setCustomer(customerData);
 
           console.log('LOGGED IN_____________');
+          console.log(customerData, ' CUSTOMER DATA');
           this.onLogin();
         },
         (errorResp) => {

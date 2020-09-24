@@ -15,6 +15,10 @@ import { RegisterAdminComponent } from './components/register-admin/register-adm
 import { SearchComponent } from './components/search/search.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ProductsListAdminComponent } from './components/products-list-admin/products-list-admin.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { OrderComponent } from './components/order/order.component';
+import { OrderFinishedPageComponent } from './components/order-finished-page/order-finished-page.component';
+import { SerachInCartComponent } from './components/serach-in-cart/serach-in-cart.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +33,9 @@ import { ProductsListAdminComponent } from './components/products-list-admin/pro
     RegisterAdminComponent,
     SearchComponent,
     ProductsListAdminComponent,
+    OrderComponent,
+    OrderFinishedPageComponent,
+    SerachInCartComponent,
   ],
   imports: [
     BrowserModule,
@@ -36,6 +43,7 @@ import { ProductsListAdminComponent } from './components/products-list-admin/pro
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
+    FontAwesomeModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

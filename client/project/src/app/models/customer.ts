@@ -1,4 +1,5 @@
 export interface Customer {
   email: String;
-  id: Number;
+  customerIdNumber: Number;
+  idetification_number: Number;
 }

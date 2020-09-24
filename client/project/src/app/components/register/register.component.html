@@ -81,25 +81,33 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="customerIdNumber"> ID Number </label>
+        <label for="identification_number"> ID Number </label>
         <input
           type="number"
           class="form-control"
-          formControlName="customerIdNumber"
-          id="customerIdNumber"
+          formControlName="identification_number"
+          id="identification_number"
         />
         <div
-          *ngIf="registerForm.get('customerIdNumber').invalid && showErrors"
+          *ngIf="
+            registerForm.get('identification_number').invalid && showErrors
+          "
           class="alert alert-danger"
         >
-          <div *ngIf="registerForm.get('customerIdNumber').errors.required">
-            Customer ID Number is required.
+          <div
+            *ngIf="registerForm.get('identification_number').errors.required"
+          >
+            Idetification Number is required.
           </div>
-          <div *ngIf="registerForm.get('customerIdNumber').errors.maxlength">
-            Customer ID Number cannot be more than 10 characters long.
+          <div
+            *ngIf="registerForm.get('identification_number').errors.maxlength"
+          >
+            IdetificationNumber cannot be more than 10 characters long.
           </div>
-          <div *ngIf="registerForm.get('customerIdNumber').errors.minlength">
-            Customer ID Number must be at least 8 characters long.
+          <div
+            *ngIf="registerForm.get('identification_number').errors.minlength"
+          >
+            Idetification Number must be at least 8 characters long.
           </div>
         </div>
       </div>

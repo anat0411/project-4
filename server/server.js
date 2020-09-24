@@ -99,9 +99,9 @@ app.route("/api/login").post((req, res) => {
   const { email, password } = req.body;
   console.log("BODY LOGIN --------- ", req.body.email);
 
-  if (!email || !password || !email.includes("@")) {
-    return res.json({ success: false, msg: "Missing data" });
-  }
+  // if (!email || !password || !email.includes("@")) {
+  //   return res.json({ success: false, msg: "Missing data" });
+  // }
 
   pool.query(
     `
@@ -111,22 +111,34 @@ app.route("/api/login").post((req, res) => {
     [email],
     (err, results) => {
       if (err) throw err;
+      console.log("RES --------------------------------", results);
 
       if (results.length) {
-        const { password: hash, email, customer_id_number } = results[0];
-        console.log("PASSWORD ", hash);
-        console.log("EMAil ", email);
+        const {
+          password: hash,
+          email,
+          customer_id_number,
+          identification_number,
+        } = results[0];
+        console.log(identification_number);
 
         bcrypt.compare(password, hash, (err, result) => {
           if (err) throw err;
-          console.log(password, " ", hash);
           console.log(result);
 
-          // CHANGE COMPARE
-          if (password.length > 1) {
-            req.session.user = { email: email, id: customer_id_number };
+          if (result) {
+            req.session.user = {
+              email: email,
+              customerIdNumber: customer_id_number,
+              identification_number: identification_number,
+            };
             console.log("SESSION LOGIN ====================", req.session);
-            res.json({ success: true, email: email, id: customer_id_number });
+            res.json({
+              success: true,
+              email: email,
+              customerIdNumber: customer_id_number,
+              identification_number: identification_number,
+            });
           } else {
             console.log("Err");
             res.json({ success: false });
@@ -174,8 +186,15 @@ app.route("/api/admin/login").post((req, res) => {
 
           // success login
           if (result) {
-            req.session.user = { email: email, id: id };
-            res.json({ success: true, email: email });
+            req.session.admin = {
+              email: email,
+              id: id,
+            };
+            res.json({
+              success: true,
+              email: email,
+              id: id,
+            });
           } else {
             console.log("Err");
             res.json({ success: false });
@@ -189,7 +208,7 @@ app.route("/api/admin/login").post((req, res) => {
   );
 });
 
-app.get("/api/admin/logout", isAdminAuth, (req, res) => {
+app.get("/api/admin/logout", (req, res) => {
   if (req.session) {
     req.session.destroy();
     res.json({ success: true });
@@ -203,7 +222,7 @@ app.route("/api/register").post((req, res) => {
     firstName,
     lastName,
     email,
-    customerIdNumber,
+    identification_number,
     password,
     city,
     street,
@@ -212,14 +231,14 @@ app.route("/api/register").post((req, res) => {
   //   !firstname ||
   //   !lastname ||
   //   !email ||
-  //   !customer_id_number ||
+  //   !identification_number ||
   //   !password ||
   //   !city ||
   //   !street ||
   //   typeof firstname !== String ||
   //   typeof lastname !== String ||
   //   typeof email !== String ||
-  //   typeof customer_id_number !== Number ||
+  //   typeof identification_number !== Number ||
   //   typeof password !== String ||
   //   typeof city !== String ||
   //   typeof street !== String ||
@@ -232,10 +251,10 @@ app.route("/api/register").post((req, res) => {
     if (err) throw err;
     pool.query(
       `
-      INSERT INTO customers (firstname, lastname, email, customer_id_number, password, city, street)
+      INSERT INTO customers (firstname, lastname, email, identification_number, password, city, street)
       VALUES (?,?,?,?,?,?,?);
               `,
-      [firstName, lastName, email, customerIdNumber, hash, city, street],
+      [firstName, lastName, email, identification_number, hash, city, street],
       (err, results) => {
         if (err) {
           if (err.code === "ER_DUP_ENTRY") {
@@ -252,22 +271,22 @@ app.route("/api/register").post((req, res) => {
 });
 
 app.route("/api/admin/register").post((req, res) => {
-  const { firstname, lastname, email, admin_id_number, password } = req.body;
-  if (
-    !firstname ||
-    !lastname ||
-    !email ||
-    !admin_id_number ||
-    !password ||
-    typeof firstname !== String ||
-    typeof lastname !== String ||
-    typeof email !== String ||
-    typeof admin_id_number !== Number ||
-    typeof password !== String ||
-    !email.includes("@")
-  ) {
-    return res.json({ success: false, msg: "Missing fields" });
-  }
+  const { firstName, lastName, email, adminIdNumber, password } = req.body;
+  // if (
+  //   !firstname ||
+  //   !lastname ||
+  //   !email ||
+  //   !admin_id_number ||
+  //   !password ||
+  //   typeof firstname !== String ||
+  //   typeof lastname !== String ||
+  //   typeof email !== String ||
+  //   typeof admin_id_number !== Number ||
+  //   typeof password !== String ||
+  //   !email.includes("@")
+  // ) {
+  //   return res.json({ success: false, msg: "Missing fields" });
+  // }
 
   bcrypt.hash(password, 10, (err, hash) => {
     if (err) throw err;
@@ -276,7 +295,7 @@ app.route("/api/admin/register").post((req, res) => {
       INSERT INTO admin (firstname, lastname, email, admin_id_number, password)
       VALUES (?,?,?,?,?)
                 `,
-      [firstname, lastname, email, admin_id_number, hash],
+      [firstName, lastName, email, adminIdNumber, hash],
       (err, results) => {
         if (err) {
           if (err.code === "ER_DUP_ENTRY") {
@@ -292,7 +311,7 @@ app.route("/api/admin/register").post((req, res) => {
   });
 });
 
-app.route("/api/products").get((req, res) => {
+app.route("/api/products").get(isCustomerAuth, (req, res) => {
   pool.query(
     `
   SELECT  p.product_id, p.name, p.category_id, c.category_name, p.product_price, p.product_image
@@ -308,7 +327,7 @@ app.route("/api/products").get((req, res) => {
   );
 });
 
-app.route("/api/:category").get((req, res) => {
+app.route("/api/:category").get(isCustomerAuth, (req, res) => {
   const category = req.params.category;
   console.log(category);
   pool.query(
@@ -327,10 +346,11 @@ app.route("/api/:category").get((req, res) => {
 });
 
 app.route("/api/cart/:customerid").get((req, res) => {
-  const customerid = req.params.customerid;
+  const customerIdNumber = req.params.customerid;
+  console.log("customer id number -----------------------", customerIdNumber);
   pool.query(
     `SELECT * from carts WHERE customer_id_number=? `,
-    [customerid],
+    [customerIdNumber],
     (err, results, fields) => {
       if (err) throw err;
       if (results.length === 0) {
@@ -360,7 +380,7 @@ app.route("/api/cart/:customerid").get((req, res) => {
   );
 });
 
-app.route("/api/products/search/:input").get((req, res) => {
+app.route("/api/products/search/:input").get(isCustomerAuth, (req, res) => {
   const input = req.params.input;
   pool.query(
     `SELECT * from products WHERE name=? `,
@@ -476,8 +496,8 @@ app
   });
 
 app.route("/api/add/item/cart").post((req, res) => {
-  const { product_id, cart_id } = req.body;
-  const customerId = req.session.user.id;
+  const { product_id, cart_id, units } = req.body;
+  const customerIdNumber = req.session.user.customerIdNumber;
   console.log(
     "SESSION-----------------------------------------------------------------",
     req.session
@@ -508,7 +528,9 @@ app.route("/api/add/item/cart").post((req, res) => {
                   added = true;
                   pool.query(
                     `
-                UPDATE cart_items SET product_units = product_units+1, item_price=item_price+${product.product_price} WHERE product_id=?`,
+                UPDATE cart_items SET product_units = product_units+${units}, item_price=item_price+${
+                      product.product_price * units
+                    } WHERE product_id=?`,
                     [product_id]
                   );
                   return res.json({ success: true });
@@ -525,7 +547,7 @@ app.route("/api/add/item/cart").post((req, res) => {
                 );
                 pool.query(
                   `INSERT INTO cart_items (product_id, product_units, item_price, cart_id) VALUES (?,?,?,?)`,
-                  [product_id, 1, product.product_price, cart_id],
+                  [product_id, units, product.product_price * units, cart_id],
                   (err_3, results_3) => {
                     if (err_3) throw err_3;
                     return res.json({ success: true });
@@ -533,17 +555,25 @@ app.route("/api/add/item/cart").post((req, res) => {
                 );
               }
             } else {
-              console.log(customerId);
+              console.log(
+                "customer id number -------------------",
+                customerIdNumber
+              );
               pool.query(
                 `INSERT INTO carts (customer_id_number) VALUES (?)`,
-                [customerId],
+                [customerIdNumber],
                 (err_4, results_4) => {
                   if (err_4) throw err_4;
-                  console.log("new cart: +++++++++++", results_4);
+                  console.log("new cart: +++++++++++", results_4.insertId);
                   if (results_4) {
                     pool.query(
                       `INSERT INTO cart_items (product_id, product_units, item_price, cart_id) VALUES (?,?,?,?)`,
-                      [product_id, 1, product.product_price, cart_id],
+                      [
+                        product_id,
+                        units,
+                        product.product_price * units,
+                        results_4.insertId,
+                      ],
                       (err_5, results_5) => {
                         if (err_5) throw err_5;
                         console.log(results_5);
@@ -561,20 +591,22 @@ app.route("/api/add/item/cart").post((req, res) => {
   );
 });
 
-app.route("/api/admin/delete/cart/:id").delete(isAdminAuth, (req, res) => {
+app.route("/api/delete/cart/:id").delete(isCustomerAuth, (req, res) => {
   const id = req.params.id;
-  if (typeof id !== Number) {
-    return res.json({ success: false, msg: "ID NOT A NUMBER" });
-  }
-  pool.query(`DELETE FROM carts WHERE cart_id=? `, id, (err, results) => {
+  // if (typeof id !== Number) {
+  //   return res.json({ success: false, msg: "ID NOT A NUMBER" });
+  // }
+  console.log(id);
+  pool.query(`DELETE FROM cart_items WHERE cart_id=? `, id, (err, results) => {
     if (err) throw err;
 
     if (results) {
       pool.query(
-        ` DELETE FROM cart_items WHERE cart_id=? `,
+        `  DELETE FROM carts WHERE cart_id=? `,
         [id],
         (err, results) => {
           if (err) throw err;
+          console.log("SUCCESS TRUE ---------------------------");
           res.json({ success: true });
         }
       );
@@ -584,11 +616,11 @@ app.route("/api/admin/delete/cart/:id").delete(isAdminAuth, (req, res) => {
   });
 });
 
-app.route("/api/admin/delete/cart/item/:id").delete(isAdminAuth, (req, res) => {
+app.route("/api/delete/cart/item/:id").delete(isCustomerAuth, (req, res) => {
   const id = req.params.id;
-  if (typeof id !== Number) {
-    return res.json({ success: false, msg: "ID NOT A NUMBER" });
-  }
+  // if (typeof id !== Number) {
+  //   return res.json({ success: false, msg: "ID NOT A NUMBER" });
+  // }
   pool.query(
     `DELETE FROM cart_items WHERE item_id=? `,
     [id],
@@ -596,7 +628,19 @@ app.route("/api/admin/delete/cart/item/:id").delete(isAdminAuth, (req, res) => {
       if (err) throw err;
 
       if (results) {
-        res.json({ success: true });
+        const cart_id = req.query.cart_id;
+        pool.query(
+          `SELECT p.product_id, p.name, p.category_id, p.product_price, p.product_image,
+          c_i.item_id, c_i.product_units, c_i.cart_id, c_i.item_price
+             FROM supermarket.products AS p
+             LEFT JOIN supermarket.cart_items AS c_i ON
+             p.product_id = c_i.product_id
+             WHERE c_i.cart_id=?`,
+          [cart_id],
+          (err2, results_2) => {
+            res.json(results_2);
+          }
+        );
       } else {
         res.json({ success: false });
       }
@@ -604,7 +648,7 @@ app.route("/api/admin/delete/cart/item/:id").delete(isAdminAuth, (req, res) => {
   );
 });
 
-app.route("/api/order/cart/:id").post(isAdminAuth, (req, res) => {
+app.route("/api/order/cart/:id").post((req, res) => {
   const id = req.params.id;
   if (typeof id !== Number) {
     return res.json({ success: false, msg: "ID NOT A NUMBER" });
@@ -620,7 +664,7 @@ app.route("/api/order/cart/:id").post(isAdminAuth, (req, res) => {
         console.log("RESULTS ", results[0].cart_total_price);
         const total_price = results[0].cart_total_price;
         const {
-          customer_id_number,
+          identification_number,
           cart_id,
           city,
           street,
@@ -628,31 +672,25 @@ app.route("/api/order/cart/:id").post(isAdminAuth, (req, res) => {
         } = req.body;
         if (
           !customer_id_number ||
-          !cart_id ||
+          !id ||
           !city ||
           !street ||
           !delivery_date ||
-          !total_price ||
-          typeof customer_id_number !== Number ||
-          typeof cart_id !== Number ||
-          typeof total_price !== Number ||
-          typeof city !== String ||
-          typeof street !== String ||
-          typeof delivery_date !== String
+          !total_price
+          // ||
+          // typeof identification_number !== Number ||
+          // typeof cart_id !== Number ||
+          // typeof total_price !== Number ||
+          // typeof city !== String ||
+          // typeof street !== String ||
+          // typeof delivery_date !== String
         ) {
           return res.json({ success: false, msg: "Missing fields ORDER" });
         }
         pool.query(
-          `INSERT INTO orders (customer_id_number,  cart_id, total_price, city, street, delivery_date) 
+          `INSERT INTO orders (identification_number,  cart_id, total_price, city, street, delivery_date) 
             VALUES (?,?,?,?,?,?)`,
-          [
-            customer_id_number,
-            cart_id,
-            total_price,
-            city,
-            street,
-            delivery_date,
-          ],
+          [identification_number, id, total_price, city, street, delivery_date],
           (err_2, results_2) => {
             if (err_2) throw err_2;
 

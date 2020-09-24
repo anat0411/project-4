@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Product } from '../models/product';
@@ -23,6 +23,7 @@ export class ServerService {
         category_name: null,
         product_price: null,
         product_image: null,
+        units_to_buy: null,
       },
     ]);
     //initial value
@@ -102,10 +103,11 @@ export class ServerService {
     });
   }
 
-  addProductToCart(productId, cartId) {
+  addProductToCart(productId, cartId, units) {
     const body = {
       product_id: productId,
       cart_id: cartId,
+      units,
     };
     console.log(body);
     return this.http.post(`${environment.baseUrl.server}/add/item/cart`, body, {
@@ -116,12 +118,41 @@ export class ServerService {
     });
   }
 
-  getCart(customerid) {
-    return this.http.get(`${environment.baseUrl.server}/cart/${customerid}`, {
+  getCart(id) {
+    return this.http.get(`${environment.baseUrl.server}/cart/${id}`, {
       withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
       },
     });
+  }
+
+  removeItemFromCart(item) {
+    const item_id = item.item_id;
+    const body = {
+      cart_id: item.cart_id,
+    };
+    return this.http.delete(
+      `${environment.baseUrl.server}/delete/cart/item/${item_id}`,
+      {
+        withCredentials: true,
+        params: new HttpParams({ fromString: `cart_id=${item.cart_id}` }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+  }
+
+  removeAllCartItems(cartId) {
+    return this.http.delete(
+      `${environment.baseUrl.server}/delete/cart/${cartId}`,
+      {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
   }
 }

@@ -44,7 +44,7 @@ export class RegisterComponent implements OnInit {
       Validators.maxLength(50),
       Validators.pattern('^[a-zA-Z]+$'),
     ]),
-    customerIdNumber: new FormControl('', [
+    identification_number: new FormControl('', [
       Validators.required,
       Validators.minLength(8),
       Validators.maxLength(10),
@@ -83,7 +83,8 @@ export class RegisterComponent implements OnInit {
     const email = this.registerForm.get('email').value;
     const city = this.registerForm.get('city').value;
     const street = this.registerForm.get('street').value;
-    const customerIdNumber = this.registerForm.get('customerIdNumber').value;
+    const identification_number = this.registerForm.get('identification_number')
+      .value;
     const password = this.registerForm.get('password').value;
 
     const customerData = {
@@ -92,7 +93,7 @@ export class RegisterComponent implements OnInit {
       email,
       city,
       street,
-      customerIdNumber,
+      identification_number,
       password,
     };
 

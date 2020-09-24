@@ -10,6 +10,23 @@
           formControlName="email"
           id="email"
         />
+        <div
+          *ngIf="loginForm.get('email').invalid && showErrors"
+          class="alert alert-danger"
+        >
+          <div *ngIf="loginForm.get('email').errors.required">
+            Email is required.
+          </div>
+          <div *ngIf="loginForm.get('email').errors.maxlength">
+            Email cannot be more than 60 characters long.
+          </div>
+          <div *ngIf="loginForm.get('email').errors.minlength">
+            Email must be at least 2 characters long.
+          </div>
+          <div *ngIf="loginForm.get('email').errors.email">
+            Email must be a valid email address
+          </div>
+        </div>
       </div>
       <div class="form-group">
         <label for="password"> password </label>
@@ -19,6 +36,23 @@
           formControlName="password"
           id="password"
         />
+        <div
+          *ngIf="loginForm.get('password').invalid && showErrors"
+          class="alert alert-danger"
+        >
+          <div *ngIf="loginForm.get('password').errors.required">
+            Password is required.
+          </div>
+          <div *ngIf="loginForm.get('password').errors.maxlength">
+            Password cannot be more than 100 characters long.
+          </div>
+          <div *ngIf="loginForm.get('password').errors.minlength">
+            Password must be at least 6 characters long.
+          </div>
+          <div *ngIf="loginForm.get('password').errors.pattern">
+            Please use only English letters and digits.
+          </div>
+        </div>
       </div>
       <button type="submit" class="btn btn-success">Login</button>
     </form>

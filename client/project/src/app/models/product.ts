@@ -5,4 +5,5 @@ export interface Product {
   category_name: string;
   product_price: number;
   product_image: string;
+  units_to_buy: number;
 }

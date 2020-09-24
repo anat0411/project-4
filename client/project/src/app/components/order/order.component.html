@@ -1,0 +1,89 @@
+<h1>Order</h1>
+<div class="row">
+  <app-serach-in-cart></app-serach-in-cart>
+</div>
+<div class="row">
+  <div class="col-md-2"><app-cart-list></app-cart-list></div>
+  <div class="col-md-10 text-center">
+    <form [formGroup]="shippingDetails">
+      <button routerLink="/products-list" routerLinkActive="active">
+        Back to Products List
+      </button>
+      <h3>Shipping Details</h3>
+      <hr />
+      <div class="form-group">
+        <label for="city"> City </label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="city"
+          id="city"
+        />
+        <div
+          *ngIf="shippingDetails.get('city').invalid && showErrors"
+          class="alert alert-danger"
+        >
+          <div *ngIf="shippingDetails.get('city').errors.required">
+            City is required.
+          </div>
+          <div *ngIf="shippingDetails.get('city').errors.maxlength">
+            City cannot be more than 30 characters long.
+          </div>
+          <div *ngIf="shippingDetails.get('city').errors.minlength">
+            City must be at least 3 characters long.
+          </div>
+          <div *ngIf="shippingDetails.get('city').errors.pattern">
+            City can inclide only English letters.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="street"> Street </label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="street"
+          id="street"
+        />
+        <div
+          *ngIf="shippingDetails.get('street').invalid && showErrors"
+          class="alert alert-danger"
+        >
+          <div *ngIf="shippingDetails.get('street').errors.required">
+            Street is required.
+          </div>
+          <div *ngIf="shippingDetails.get('street').errors.maxlength">
+            Street cannot be more than 50 characters long.
+          </div>
+          <div *ngIf="shippingDetails.get('street').errors.minlength">
+            Street must be at least 3 characters long.
+          </div>
+          <div *ngIf="shippingDetails.get('street').errors.pattern">
+            Street can inclide only English letters.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="deliveryDate"> Street </label>
+        <input
+          type="date"
+          class="form-control"
+          formControlName="deliveryDate"
+          id="deliveryDate"
+        />
+        <div
+          *ngIf="shippingDetails.get('deliveryDate').invalid && showErrors"
+          class="alert alert-danger"
+        >
+          <div *ngIf="shippingDetails.get('deliveryDate').errors.required">
+            Delivey Date is required.
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-success">Order!</button>
+    </form>
+  </div>
+</div>
