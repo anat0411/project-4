@@ -20,6 +20,7 @@ import { OrderComponent } from './components/order/order.component';
 import { OrderFinishedPageComponent } from './components/order-finished-page/order-finished-page.component';
 import { SerachInCartComponent } from './components/serach-in-cart/serach-in-cart.component';
 import { ProductsEditComponent } from './components/products-edit/products-edit.component';
+import { ProductsAddComponent } from './components/products-add/products-add.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { ProductsEditComponent } from './components/products-edit/products-edit.
     OrderFinishedPageComponent,
     SerachInCartComponent,
     ProductsEditComponent,
+    ProductsAddComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,94 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-3"></div>
+    <div class="card col-md-6" style="width: 18rem">
+      <div class="card-body">
+        <form [formGroup]="addProductForm">
+          <div class="form-group">
+            <label for="productName"> Product Name </label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="productName"
+              id="productName"
+            />
+            <div
+              *ngIf="addProductForm.get('productName').invalid && showErrors"
+              class="alert alert-danger"
+            >
+              <div *ngIf="addProductForm.get('productName').errors.required">
+                Product Name is required.
+              </div>
+              <div *ngIf="addProductForm.get('productName').errors.maxlength">
+                Product Name cannot be more than 50 characters long.
+              </div>
+              <div *ngIf="addProductForm.get('productName').errors.minlength">
+                Product Name must be at least 2 characters long.
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="productPrice"> Product Price </label>
+            <input
+              type="number"
+              class="form-control"
+              formControlName="productPrice"
+              id="productPrice"
+            />
+            <div
+              *ngIf="addProductForm.get('productPrice').invalid && showErrors"
+              class="alert alert-danger"
+            >
+              <div *ngIf="addProductForm.get('productPrice').errors.required">
+                Product Price is required.
+              </div>
+
+              <div *ngIf="addProductForm.get('productPrice').errors.minlength">
+                Product Price must be at least 1 characters long.
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="productImage"> Product Image </label>
+            <input
+              type="image"
+              class="form-control"
+              formControlName="productImage"
+              id="productImage"
+            />
+            <div
+              *ngIf="addProductForm.get('productImage').invalid && showErrors"
+              class="alert alert-danger"
+            >
+              <div *ngIf="addProductForm.get('productImage').errors.required">
+                Product Image is required.
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="productCategory"> Product Category </label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="productCategory"
+              id="productCategory"
+            />
+            <div
+              *ngIf="
+                addProductForm.get('productCategory').invalid && showErrors
+              "
+              class="alert alert-danger"
+            >
+              <div
+                *ngIf="addProductForm.get('productCategory').errors.required"
+              >
+                Product Category is required.
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-success">Add</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

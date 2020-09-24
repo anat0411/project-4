@@ -8,6 +8,7 @@ import { RegisterAdminComponent } from './components/register-admin/register-adm
 import { ProductsListAdminComponent } from './components/products-list-admin/products-list-admin.component';
 import { OrderComponent } from './components/order/order.component';
 import { OrderFinishedPageComponent } from './components/order-finished-page/order-finished-page.component';
+import { ProductsAddComponent } from './components/products-add/products-add.component';
 
 const routes: Routes = [
   { path: 'admin/login', component: LoginAdminComponent },
@@ -24,6 +25,7 @@ const routes: Routes = [
   { path: 'products-list-admin', component: ProductsListAdminComponent },
   { path: 'order', component: OrderComponent },
   { path: 'order/finished', component: OrderFinishedPageComponent },
+  { path: 'admin/add/product', component: ProductsAddComponent },
 ];
 
 @NgModule({
