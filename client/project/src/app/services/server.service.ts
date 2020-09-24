@@ -74,6 +74,15 @@ export class ServerService {
     });
   }
 
+  getAllProductsAdmin() {
+    return this.http.get(`${environment.baseUrl.server}/admin/products`, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  }
+
   getMilkEggesProducts() {
     console.log(`${environment.baseUrl.server}/Milk,Eggs`);
     return this.http.get(`${environment.baseUrl.server}/Milk,Eggs`, {

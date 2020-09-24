@@ -19,6 +19,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { OrderComponent } from './components/order/order.component';
 import { OrderFinishedPageComponent } from './components/order-finished-page/order-finished-page.component';
 import { SerachInCartComponent } from './components/serach-in-cart/serach-in-cart.component';
+import { ProductsEditComponent } from './components/products-edit/products-edit.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { SerachInCartComponent } from './components/serach-in-cart/serach-in-car
     OrderComponent,
     OrderFinishedPageComponent,
     SerachInCartComponent,
+    ProductsEditComponent,
   ],
   imports: [
     BrowserModule,

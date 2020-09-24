@@ -327,6 +327,22 @@ app.route("/api/products").get(isCustomerAuth, (req, res) => {
   );
 });
 
+app.route("/api/admin/products").get(isAdminAuth, (req, res) => {
+  pool.query(
+    `
+  SELECT  p.product_id, p.name, p.category_id, c.category_name, p.product_price, p.product_image
+  FROM products AS p
+  LEFT JOIN category as c ON
+  p.category_id = c.category_id`,
+    [],
+    (err, results, fields) => {
+      if (err) throw err;
+      res.json(results);
+      // console.log(results[0].name);
+    }
+  );
+});
+
 app.route("/api/:category").get(isCustomerAuth, (req, res) => {
   const category = req.params.category;
   console.log(category);

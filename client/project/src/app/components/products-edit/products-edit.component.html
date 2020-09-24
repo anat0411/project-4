@@ -1,0 +1,71 @@
+<div class="col-md-6 mb-3">
+  <div class="card" style="width: 18rem">
+    <div class="card-body">
+      <form [formGroup]="editProductForm">
+        <div class="form-group">
+          <label for="productName"> Product Name </label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="productName"
+            id="productName"
+          />
+          <div
+            *ngIf="editProductForm.get('productName').invalid && showErrors"
+            class="alert alert-danger"
+          >
+            <div *ngIf="editProductForm.get('productName').errors.required">
+              Product Name is required.
+            </div>
+            <div *ngIf="editProductForm.get('productName').errors.maxlength">
+              Product Name cannot be more than 50 characters long.
+            </div>
+            <div *ngIf="editProductForm.get('productName').errors.minlength">
+              Product Name must be at least 2 characters long.
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="productPrice"> Product Price </label>
+          <input
+            type="number"
+            class="form-control"
+            formControlName="productPrice"
+            id="productPrice"
+          />
+          <div
+            *ngIf="editProductForm.get('productPrice').invalid && showErrors"
+            class="alert alert-danger"
+          >
+            <div *ngIf="editProductForm.get('productPrice').errors.required">
+              Product Price is required.
+            </div>
+
+            <div *ngIf="editProductForm.get('productPrice').errors.minlength">
+              Product Price must be at least 1 characters long.
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="productImage"> Product Price </label>
+          <input
+            type="image"
+            class="form-control"
+            formControlName="productImage"
+            id="productImage"
+          />
+          <div
+            *ngIf="editProductForm.get('productImage').invalid && showErrors"
+            class="alert alert-danger"
+          >
+            <div *ngIf="editProductForm.get('productImage').errors.required">
+              Product Image is required.
+            </div>
+          </div>
+          <div>Category Name:</div>
+        </div>
+        <button type="submit" class="btn btn-success">Add</button>
+      </form>
+    </div>
+  </div>
+</div>
