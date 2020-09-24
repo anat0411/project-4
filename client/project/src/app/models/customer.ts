@@ -1,5 +1,7 @@
 export interface Customer {
   email: String;
-  customerIdNumber: Number;
+  customer_id_number: Number;
   idetification_number: Number;
+  city: String;
+  street: String;
 }

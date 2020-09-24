@@ -37,16 +37,17 @@ export class CartListComponent implements OnInit, OnDestroy {
                 newProduct.units_to_buy
               )
               .subscribe((result) => {
-                this.loadCart(this.customer.customerIdNumber);
+                this.loadCart(this.customer.customer_id_number);
                 console.log(result);
               });
+            this.server.setNewCartProduct(null);
           }
         });
     }
     this.auth.getCustomer().subscribe((customer) => {
       this.customer = customer;
       console.log(this.customer);
-      this.loadCart(this.customer.customerIdNumber);
+      this.loadCart(this.customer.customer_id_number);
     });
   }
 

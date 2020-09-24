@@ -60,7 +60,7 @@ export class ProductsEditComponent implements OnInit {
           const productData = {
             // name: resp.email,
             // identification_number: resp.identification_number,
-            // customerIdNumber: resp.customerIdNumber,
+            // customer_id_number: resp.customer_id_number,
           };
           // this.server.setProductDATA(productData);
 

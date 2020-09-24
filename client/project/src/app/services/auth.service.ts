@@ -23,6 +23,14 @@ export class AuthService {
     console.log(window.sessionStorage.getItem('email'));
     const email = window.sessionStorage.getItem('email');
     if (!email || email === 'null') return false;
+    return true;
+  }
+
+  isAdminAuthenticated(): Boolean {
+    console.log(window.sessionStorage.getItem('email'));
+    const email = window.sessionStorage.getItem('email');
+    if (!email || email === 'null') return false;
+    return true;
   }
 
   getIsCustomerLoggedIn(): Observable<Boolean> {
@@ -42,8 +50,13 @@ export class AuthService {
       'identification_number',
       data.identification_number
     );
-    window.sessionStorage.setItem('customerIdNumber', data.customerIdNumber);
+    window.sessionStorage.setItem(
+      'customer_id_number',
+      data.customer_id_number
+    );
     window.sessionStorage.setItem('email', data.email);
+    window.sessionStorage.setItem('city', data.city);
+    window.sessionStorage.setItem('street', data.street);
     this.customer.next(data);
   }
 
@@ -57,9 +70,19 @@ export class AuthService {
     const identification_number = window.sessionStorage.getItem(
       'identification_number'
     );
-    const customerIdNumber = window.sessionStorage.getItem('customerIdNumber');
+    const customer_id_number = window.sessionStorage.getItem(
+      'customer_id_number'
+    );
+    const city = window.sessionStorage.getItem('city');
+    const street = window.sessionStorage.getItem('street');
     const email = window.sessionStorage.getItem('email');
-    this.setCustomer({ identification_number, email, customerIdNumber });
+    this.setCustomer({
+      identification_number,
+      email,
+      customer_id_number,
+      city,
+      street,
+    });
   }
 
   getAdminDataFromSession() {

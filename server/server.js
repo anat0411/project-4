@@ -74,6 +74,7 @@ app.use(
 app.use(express.json());
 
 const isCustomerAuth = (req, res, next) => {
+  console.log(req.session);
   if (req.session.user) {
     return next();
   }
@@ -129,15 +130,13 @@ app.route("/api/login").post((req, res) => {
           if (result) {
             req.session.user = {
               email: email,
-              customerIdNumber: customer_id_number,
+              customer_id_number: customer_id_number,
               identification_number: identification_number,
             };
             console.log("SESSION LOGIN ====================", req.session);
             res.json({
               success: true,
-              email: email,
-              customerIdNumber: customer_id_number,
-              identification_number: identification_number,
+              ...results[0],
             });
           } else {
             console.log("Err");
@@ -263,6 +262,11 @@ app.route("/api/register").post((req, res) => {
 
           throw err;
         }
+        req.session.user = {
+          email: email,
+          customer_id_number: results.insertId,
+          identification_number: identification_number,
+        };
 
         res.json({ success: true, msg: results.insertId });
       }
@@ -304,6 +308,10 @@ app.route("/api/admin/register").post((req, res) => {
 
           throw err;
         }
+        req.session.admin = {
+          email: email,
+          id: results.insertId,
+        };
 
         res.json({ success: true, msg: results.insertId });
       }
@@ -362,11 +370,11 @@ app.route("/api/:category").get(isCustomerAuth, (req, res) => {
 });
 
 app.route("/api/cart/:customerid").get((req, res) => {
-  const customerIdNumber = req.params.customerid;
-  console.log("customer id number -----------------------", customerIdNumber);
+  const customer_id_number = req.params.customerid;
+  console.log("customer id number -----------------------", customer_id_number);
   pool.query(
     `SELECT * from carts WHERE customer_id_number=? `,
-    [customerIdNumber],
+    [customer_id_number],
     (err, results, fields) => {
       if (err) throw err;
       if (results.length === 0) {
@@ -513,7 +521,7 @@ app
 
 app.route("/api/add/item/cart").post((req, res) => {
   const { product_id, cart_id, units } = req.body;
-  const customerIdNumber = req.session.user.customerIdNumber;
+  const customer_id_number = req.session.user.customer_id_number;
   console.log(
     "SESSION-----------------------------------------------------------------",
     req.session
@@ -531,53 +539,68 @@ app.route("/api/add/item/cart").post((req, res) => {
       console.log("product ------- :", product);
       if (results) {
         pool.query(
-          `SELECT * FROM cart_items WHERE cart_id=?`,
+          `SELECT * FROM carts WHERE cart_id=?`,
           [cart_id],
           (err_2, results_2) => {
             if (err_2) throw err_2;
             const cart = JSON.parse(JSON.stringify(results_2));
             console.log("Cart ---- ", cart);
             if (cart.length > 0) {
-              let added = false;
-              cart.forEach((item) => {
-                if (item.product_id === product_id) {
-                  added = true;
-                  pool.query(
-                    `
+              pool.query(
+                `
+              SELECT * FROM cart_items WHERE cart_id=?
+              `,
+                [cart_id],
+                (err_6, results_6) => {
+                  const cart = JSON.parse(JSON.stringify(results_6));
+
+                  let added = false;
+                  cart.forEach((item) => {
+                    if (item.product_id === product_id) {
+                      added = true;
+                      pool.query(
+                        `
                 UPDATE cart_items SET product_units = product_units+${units}, item_price=item_price+${
-                      product.product_price * units
-                    } WHERE product_id=?`,
-                    [product_id]
-                  );
-                  return res.json({ success: true });
-                }
-              });
-              console.log("  ADDED-----------------", added);
-              if (!added) {
-                console.log(
-                  "query data : ",
-                  product_id,
-                  1,
-                  product.product_price,
-                  cart_id
-                );
-                pool.query(
-                  `INSERT INTO cart_items (product_id, product_units, item_price, cart_id) VALUES (?,?,?,?)`,
-                  [product_id, units, product.product_price * units, cart_id],
-                  (err_3, results_3) => {
-                    if (err_3) throw err_3;
-                    return res.json({ success: true });
+                          product.product_price * units
+                        } WHERE product_id=?`,
+                        [product_id]
+                      );
+                      return res.json({ success: true });
+                    }
+                  });
+                  console.log("  ADDED-----------------", added);
+                  if (!added) {
+                    console.log(
+                      "query data : ",
+                      product_id,
+                      1,
+                      product.product_price,
+                      cart_id
+                    );
+                    pool.query(
+                      `INSERT INTO cart_items (product_id, product_units, item_price, cart_id) VALUES (?,?,?,?)`,
+                      [
+                        product_id,
+                        units,
+                        product.product_price * units,
+                        cart_id,
+                      ],
+                      (err_3, results_3) => {
+                        if (err_3) throw err_3;
+                        return res.json({ success: true });
+                      }
+                    );
                   }
-                );
-              }
+                }
+              );
             } else {
               console.log(
                 "customer id number -------------------",
-                customerIdNumber
+                customer_id_number
               );
               pool.query(
                 `INSERT INTO carts (customer_id_number) VALUES (?)`,
-                [customerIdNumber],
+                [customer_id_number],
                 (err_4, results_4) => {
                   if (err_4) throw err_4;
                   console.log("new cart: +++++++++++", results_4.insertId);
@@ -664,11 +687,23 @@ app.route("/api/delete/cart/item/:id").delete(isCustomerAuth, (req, res) => {
   );
 });
 
-app.route("/api/order/cart/:id").post((req, res) => {
+app.route("/api/get/delivery/dates").get(isCustomerAuth, (req, res) => {
+  pool.query(
+    `
+  SELECT delivery_date FROM supermarket.orders
+`,
+    [],
+    (err, results) => {
+      res.json(results);
+    }
+  );
+});
+
+app.route("/api/order/cart/:id").post(isCustomerAuth, (req, res) => {
   const id = req.params.id;
-  if (typeof id !== Number) {
-    return res.json({ success: false, msg: "ID NOT A NUMBER" });
-  }
+  // if (typeof id !== Number) {
+  //   return res.json({ success: false, msg: "ID NOT A NUMBER" });
+  // }
   pool.query(
     `select SUM(item_price) AS cart_total_price from cart_items WHERE cart_id=?
       `,
@@ -680,7 +715,7 @@ app.route("/api/order/cart/:id").post((req, res) => {
         console.log("RESULTS ", results[0].cart_total_price);
         const total_price = results[0].cart_total_price;
         const {
-          identification_number,
+          customer_id_number,
           cart_id,
           city,
           street,
@@ -704,20 +739,40 @@ app.route("/api/order/cart/:id").post((req, res) => {
           return res.json({ success: false, msg: "Missing fields ORDER" });
         }
         pool.query(
-          `INSERT INTO orders (identification_number,  cart_id, total_price, city, street, delivery_date) 
-            VALUES (?,?,?,?,?,?)`,
-          [identification_number, id, total_price, city, street, delivery_date],
+          `INSERT INTO orders (customer_id_number, total_price, city, street, delivery_date) 
+            VALUES (?,?,?,?,?)`,
+          [customer_id_number, total_price, city, street, delivery_date],
           (err_2, results_2) => {
             if (err_2) throw err_2;
 
             if (results_2) {
-              res.json({ success: true });
+              console.log(results_2);
+              pool.query(
+                `DELETE FROM cart_items where cart_id=?
+                `,
+                [id],
+                (err_3, results_3) => {
+                  if (err_3) throw err_3;
+
+                  if (results_3) {
+                    pool.query(
+                      `DELETE FROM supermarket.carts where cart_id=?
+                      `,
+                      [id],
+                      (err_4, results_4) => {
+                        if (err_4) throw err_4;
+                        console.log(results_4);
+                        res.json({ success: true });
+                      }
+                    );
+                  }
+                }
+              );
             } else {
               res.json({ success: false });
             }
           }
         );
-        res.json({ success: true });
       } else {
         res.json({ success: false });
       }

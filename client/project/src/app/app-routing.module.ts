@@ -1,5 +1,5 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { NgModule, Injectable } from '@angular/core';
+import { Routes, RouterModule, CanActivate, Router } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { ProductsListComponent } from './components/products-list/products-list.component';
@@ -9,23 +9,79 @@ import { ProductsListAdminComponent } from './components/products-list-admin/pro
 import { OrderComponent } from './components/order/order.component';
 import { OrderFinishedPageComponent } from './components/order-finished-page/order-finished-page.component';
 import { ProductsAddComponent } from './components/products-add/products-add.component';
+import { AuthService } from './services/auth.service';
+
+@Injectable()
+export class OnlyLoggedInCustomer implements CanActivate {
+  constructor(private auth: AuthService, private router: Router) {}
+
+  canActivate() {
+    if (this.auth.isCustomerAuthenticated()) {
+      return true;
+    }
+    this.router.navigateByUrl('/login');
+    return false;
+  }
+}
+
+@Injectable()
+export class OnlyLoggedInAdmin implements CanActivate {
+  constructor(private auth: AuthService, private router: Router) {}
+
+  canActivate() {
+    if (this.auth.isAdminAuthenticated()) {
+      return true;
+    }
+    this.router.navigateByUrl('/login');
+    return false;
+  }
+}
 
 const routes: Routes = [
   { path: 'admin/login', component: LoginAdminComponent },
   { path: 'login', component: LoginComponent },
   { path: 'admin/register', component: RegisterAdminComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'products-list', component: ProductsListComponent },
-  { path: 'products-list/milk&eggs', component: ProductsListComponent },
+  {
+    path: 'products-list',
+    component: ProductsListComponent,
+    canActivate: [OnlyLoggedInCustomer],
+  },
+  {
+    path: 'products-list/milk&eggs',
+    component: ProductsListComponent,
+    canActivate: [OnlyLoggedInCustomer],
+  },
   {
     path: 'products-list/vegtables&fruits',
     component: ProductsListComponent,
+    canActivate: [OnlyLoggedInCustomer],
   },
-  { path: 'products-list/meat&fish', component: ProductsListComponent },
-  { path: 'products-list-admin', component: ProductsListAdminComponent },
-  { path: 'order', component: OrderComponent },
-  { path: 'order/finished', component: OrderFinishedPageComponent },
-  { path: 'admin/add/product', component: ProductsAddComponent },
+  {
+    path: 'products-list/meat&fish',
+    component: ProductsListComponent,
+    canActivate: [OnlyLoggedInCustomer],
+  },
+  {
+    path: 'products-list-admin',
+    component: ProductsListAdminComponent,
+    canActivate: [OnlyLoggedInAdmin],
+  },
+  {
+    path: 'order',
+    component: OrderComponent,
+    canActivate: [OnlyLoggedInCustomer],
+  },
+  {
+    path: 'order/finished',
+    component: OrderFinishedPageComponent,
+    canActivate: [OnlyLoggedInCustomer],
+  },
+  {
+    path: 'admin/add/product',
+    component: ProductsAddComponent,
+    canActivate: [OnlyLoggedInAdmin],
+  },
 ];
 
 @NgModule({

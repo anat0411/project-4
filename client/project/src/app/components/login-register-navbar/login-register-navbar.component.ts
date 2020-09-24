@@ -17,10 +17,11 @@ export class LoginRegisterNavbarComponent implements OnInit {
   }
 
   onLogout() {
+    window.sessionStorage.clear();
+    this.router.navigateByUrl('/login');
+    console.log('.sessionStorage : ', window.sessionStorage);
     this.auth.logout().subscribe((data) => {
       console.log(data);
-      window.sessionStorage.clear();
-      this.router.navigateByUrl('/login');
     });
   }
 

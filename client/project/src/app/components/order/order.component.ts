@@ -4,6 +4,9 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { AuthService } from '../../services/auth.service';
+import { ServerService } from 'src/app/services/server.service';
+import { Customer } from 'src/app/models/customer';
+import { Cart } from 'src/app/models/cart';
 
 @Component({
   selector: 'app-order',
@@ -12,6 +15,9 @@ import { AuthService } from '../../services/auth.service';
 })
 export class OrderComponent implements OnInit {
   showErrors: boolean = false;
+  dates: any = [];
+  customer: Customer = null;
+  cart: Cart = null;
 
   shippingDetails = new FormGroup({
     city: new FormControl('', [
@@ -31,10 +37,37 @@ export class OrderComponent implements OnInit {
   constructor(
     private auth: AuthService,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    private server: ServerService
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.auth.getCustomer().subscribe((customer) => {
+      this.customer = customer;
+      console.log(this.customer);
+      this.server
+        .getCart(customer.customer_id_number)
+        .subscribe((cart: Cart) => {
+          this.cart = cart;
+          console.log(this.cart);
+        });
+    });
+    this.server.getDates().subscribe((dates) => {
+      console.log('dates: ', dates);
+      this.dates = dates;
+    });
+  }
+
+  setCity() {
+    console.log('set city');
+    console.log(this.shippingDetails.get('city').value);
+    console.log(this.shippingDetails.get('deliveryDate').value);
+    this.shippingDetails.setValue({
+      city: this.customer.city,
+      street: this.customer.street,
+      deliveryDate: new Date().toISOString().slice(0, 10),
+    });
+  }
 
   onOrder() {
     console.log('order-----------------------');
@@ -45,8 +78,11 @@ export class OrderComponent implements OnInit {
     this.showErrors = true;
 
     if (this.shippingDetails.invalid) {
+      this.showErrors = true;
       return;
     }
+
+    this.showErrors = false;
 
     const city = this.shippingDetails.get('city').value;
     const street = this.shippingDetails.get('street').value;
@@ -56,14 +92,26 @@ export class OrderComponent implements OnInit {
       city,
       street,
       delivery_date: deliveryDate,
+      customer_id_number: this.customer.customer_id_number,
     };
 
     console.log(deliveryData);
+    console.log(this.cart);
+
+    const orderSummary = { deliveryData, cart: this.cart };
+
+    console.log(orderSummary);
+
+    this.server.setOrderSummary(orderSummary);
 
     this.http
-      .post(`${environment.baseUrl.server}/api/order/cart`, deliveryData, {
-        withCredentials: true,
-      })
+      .post(
+        `${environment.baseUrl.server}/order/cart/${this.cart.id}`,
+        deliveryData,
+        {
+          withCredentials: true,
+        }
+      )
       .subscribe(
         (resp: any) => {
           console.log(resp);

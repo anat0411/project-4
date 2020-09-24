@@ -64,11 +64,7 @@ export class LoginComponent implements OnInit {
       .subscribe(
         (resp: any) => {
           console.log(resp);
-          const customerData = {
-            email: resp.email,
-            identification_number: resp.identification_number,
-            customerIdNumber: resp.customerIdNumber,
-          };
+          const customerData = resp;
           this.auth.setCustomer(customerData);
 
           console.log('LOGGED IN_____________');

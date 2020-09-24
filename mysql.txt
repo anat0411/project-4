@@ -96,12 +96,6 @@ CONSTRAINT `fk_order_customer`
 FOREIGN KEY (customer_id_number)
 REFERENCES supermarket.customers (customer_id_number) ON UPDATE CASCADE ON DELETE RESTRICT,
 
-cart_id  INT UNSIGNED NOT NULL,
-INDEX `idx_cart_id` (cart_id),
-CONSTRAINT `fk_cart_order` 
-FOREIGN KEY (cart_id)
-REFERENCES supermarket.carts (cart_id) ON UPDATE CASCADE ON DELETE RESTRICT,
-
 total_price INT UNSIGNED NOT NULL,
 city VARCHAR(50) NOT NULL,
 street VARCHAR(50) NOT NULL,

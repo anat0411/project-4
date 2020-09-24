@@ -10,6 +10,7 @@ import { Item } from '../models/item';
 })
 export class ServerService {
   private newCartProduct: BehaviorSubject<Product>;
+  private orderSummary: BehaviorSubject<any>;
 
   private searchData: BehaviorSubject<[Product]>;
   private searchString: BehaviorSubject<String>;
@@ -30,6 +31,7 @@ export class ServerService {
     this.searchString = new BehaviorSubject<String>('');
 
     this.newCartProduct = new BehaviorSubject<Product>(null);
+    this.orderSummary = new BehaviorSubject<any>(null);
   }
 
   getNewCartProduct(): Observable<Product> {
@@ -37,6 +39,13 @@ export class ServerService {
   }
   setNewCartProduct(newCartProduct): void {
     this.newCartProduct.next(newCartProduct);
+  }
+
+  getOrderSummary(): Observable<any> {
+    return this.orderSummary.asObservable();
+  }
+  setOrderSummary(orderSummary): void {
+    this.orderSummary.next(orderSummary);
   }
 
   getSearchData(): Observable<[Product]> {
@@ -116,7 +125,7 @@ export class ServerService {
     const body = {
       product_id: productId,
       cart_id: cartId,
-      units,
+      units: units || 1,
     };
     console.log(body);
     return this.http.post(`${environment.baseUrl.server}/add/item/cart`, body, {
@@ -126,6 +135,30 @@ export class ServerService {
       },
     });
   }
+
+  getDates() {
+    return this.http.get(`${environment.baseUrl.server}/get/delivery/dates`, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  }
+
+  // addOrder(productId, cartId, units) {
+  //   const body = {
+  //     product_id: productId,
+  //     cart_id: cartId,
+  //     units: units || 1,
+  //   };
+  //   console.log(body);
+  //   return this.http.post(`${environment.baseUrl.server}/add/item/cart`, body, {
+  //     withCredentials: true,
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //   });
+  // }
 
   getCart(id) {
     return this.http.get(`${environment.baseUrl.server}/cart/${id}`, {
