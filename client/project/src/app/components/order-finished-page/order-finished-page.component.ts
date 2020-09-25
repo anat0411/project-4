@@ -16,43 +16,44 @@ export class OrderFinishedPageComponent implements OnInit {
       console.log(orderSummary);
     });
 
-    const items = this.orderSummary.cart.items.forEach((item) => {
-      console.log(item);
-      //shows each product
-      //////////doesnt bring items units & total price!!!
+    let items = null;
+    let itemsPrices = [];
+    let totatPurchasePrice = null;
+
+    itemsPrices = this.orderSummary.cart.items.map((item) => {
+      return item.item_price;
     });
 
-    // let dataForDownload = [
-    //   {Title:'thanks'},
-    //   {totalPrice: }
-    // ]
-    ///////// add data for the recipet
-    //using for each for orderSummary.cart.items, all of them in one array
-    //using orderSummary.deliveryData for city, street, delivery_date for the rest of the recipet data
+    for (let i = 0; i < this.orderSummary.cart.items.length; i++) {
+      console.log(this.orderSummary.cart.items[i]);
+      items = this.orderSummary.cart.items[i];
+      console.log(items);
+    }
 
-    var data = [
-      {
-        name: 'Test 1',
-        age: 13,
-        average: 8.2,
-        approved: true,
-        description: "using 'Content here, content here' ",
-      },
-      {
-        name: 'Test 2',
-        age: 11,
-        average: 8.2,
-        approved: true,
-        description: "using 'Content here, content here' ",
-      },
-      {
-        name: 'Test 4',
-        age: 10,
-        average: 8.2,
-        approved: true,
-        description: "using 'Content here, content here' ",
-      },
+    totatPurchasePrice = itemsPrices.reduce((a, b) => a + b, 0);
+
+    console.log(totatPurchasePrice);
+
+    let dataForDownload = [
+      { Title: 'Thank You For Your Purchase!' },
+      { questions: 'for any questions, please write us' },
+      { email: 'shop@example.com' },
+      { totalPriceText: 'Total Price: ' },
+      { totalPrice: totatPurchasePrice },
+      { itemsText: 'Items: ' },
+      { name: items.name },
+      { itemPriceText: 'Item Price: ' },
+      { price: items.item_price },
+      { itemUnits: 'Item Units: ' },
+      { units: items.product_units },
+      { deliveryInfoText: 'Delivery Information: ' },
+      { city: this.orderSummary.deliveryData.city },
+      { street: this.orderSummary.deliveryData.street },
+      { delivery_date: this.orderSummary.deliveryData.delivery_date },
     ];
+
+    console.log(dataForDownload);
+
     var options = {
       fieldSeparator: '   ',
       quoteStrings: ' ',
@@ -60,6 +61,6 @@ export class OrderFinishedPageComponent implements OnInit {
       showTitle: true,
       useBom: true,
     };
-    new Angular2Txt(data, 'My Report', options);
+    new Angular2Txt(dataForDownload, 'My Report', options);
   }
 }
