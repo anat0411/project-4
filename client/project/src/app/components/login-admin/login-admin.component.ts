@@ -17,6 +17,7 @@ import { AuthService } from '../../services/auth.service';
 export class LoginAdminComponent implements OnInit {
   invalidLogin: boolean = false;
   showErrors: boolean = false;
+  errorLogin: boolean = false;
 
   loginAdminForm = new FormGroup({
     email: new FormControl('', [
@@ -62,12 +63,17 @@ export class LoginAdminComponent implements OnInit {
       )
       .subscribe(
         (resp: any) => {
-          console.log(resp);
-          const adminData = { email: resp.email, id: resp.id };
-          this.auth.setAdmin(adminData);
+          if (!resp.success) {
+            this.errorLogin = true;
+          } else {
+            this.errorLogin = false;
+            console.log(resp);
+            const adminData = { email: resp.email, id: resp.id };
+            this.auth.setAdmin(adminData);
 
-          console.log('ADMIN LOGGED IN_____________');
-          this.onAdminLogin();
+            console.log('ADMIN LOGGED IN_____________');
+            this.onAdminLogin();
+          }
         },
         (errorResp) => {
           console.log(

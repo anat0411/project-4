@@ -14,6 +14,7 @@ export class ServerService {
 
   private searchData: BehaviorSubject<[Product]>;
   private searchString: BehaviorSubject<String>;
+  private searchCartString: BehaviorSubject<String>;
 
   constructor(private http: HttpClient) {
     this.searchData = new BehaviorSubject<[Product]>([
@@ -29,6 +30,7 @@ export class ServerService {
     ]);
     //initial value
     this.searchString = new BehaviorSubject<String>('');
+    this.searchCartString = new BehaviorSubject<String>('');
 
     this.newCartProduct = new BehaviorSubject<Product>(null);
     this.orderSummary = new BehaviorSubject<any>(null);
@@ -48,30 +50,20 @@ export class ServerService {
     this.orderSummary.next(orderSummary);
   }
 
-  getSearchData(): Observable<[Product]> {
-    return this.searchData.asObservable();
-  }
-  setSearchData(newSearchData): void {
-    this.searchData.next(newSearchData);
-  }
-
   getSearchString(): Observable<String> {
     return this.searchString.asObservable();
   }
+
   setSearchString(newSearchString): void {
     this.searchString.next(newSearchString);
   }
 
-  getSearchProducts(input) {
-    return this.http.get(
-      `${environment.baseUrl.server}/products/search/${input}`,
-      {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+  getCartSearchString(): Observable<String> {
+    return this.searchCartString.asObservable();
+  }
+
+  setCartSearchString(newCartSearchString): void {
+    this.searchCartString.next(newCartSearchString);
   }
 
   getAllProducts() {

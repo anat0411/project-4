@@ -54,6 +54,9 @@
           </div>
         </div>
       </div>
+      <div *ngIf="errorLogin" class="alert alert-danger">
+        Wrong Email or Password
+      </div>
       <button type="submit" class="btn btn-success">Login</button>
     </form>
   </div>

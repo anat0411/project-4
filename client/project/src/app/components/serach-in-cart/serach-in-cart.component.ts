@@ -11,5 +11,9 @@ export class SerachInCartComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  onSearchChange(event) {}
+  onSearchChange(event) {
+    console.log(event.target.value);
+    const searchString = event.target.value;
+    this.server.setCartSearchString(searchString);
+  }
 }

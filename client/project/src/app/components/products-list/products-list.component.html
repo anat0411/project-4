@@ -5,7 +5,14 @@
   <div class="col-md-8 shadow-sm">
     <div class="row">
       <div class="col-md-5" *ngFor="let product of productsToShow">
-        <div class="card product-card shadow-sm mt-3">
+        <div
+          class="card product-card shadow-sm mt-3"
+          *ngIf="
+            product &&
+            product.name &&
+            product.name.toLowerCase().includes(searchString.toLowerCase())
+          "
+        >
           <div class="card-body product-card">
             <p class="card-text text-center">
               <small>{{ product.category_name }}</small>

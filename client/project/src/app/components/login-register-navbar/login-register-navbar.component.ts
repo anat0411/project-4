@@ -32,4 +32,12 @@ export class LoginRegisterNavbarComponent implements OnInit {
       this.router.navigateByUrl('/admin/login');
     });
   }
+
+  isCustomerLoggedIn() {
+    return this.auth.isCustomerAuthenticated();
+  }
+
+  isAdminLoggedIn() {
+    return this.auth.isAdminAuthenticated();
+  }
 }

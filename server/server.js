@@ -144,7 +144,6 @@ app.route("/api/login").post((req, res) => {
           }
         });
       } else {
-        console.log(success);
         res.json({ success: false });
       }
     }
@@ -200,7 +199,6 @@ app.route("/api/admin/login").post((req, res) => {
           }
         });
       } else {
-        console.log(success);
         res.json({ success: false });
       }
     }

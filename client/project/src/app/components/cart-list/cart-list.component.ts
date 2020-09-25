@@ -6,6 +6,8 @@ import { Customer } from 'src/app/models/customer';
 import { Subscription } from 'rxjs';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { faRecycle } from '@fortawesome/free-solid-svg-icons';
+import { Product } from 'src/app/models/product';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-cart-list',
@@ -13,17 +15,28 @@ import { faRecycle } from '@fortawesome/free-solid-svg-icons';
   styleUrls: ['./cart-list.component.css'],
 })
 export class CartListComponent implements OnInit, OnDestroy {
-  constructor(private server: ServerService, private auth: AuthService) {}
+  constructor(
+    private server: ServerService,
+    private auth: AuthService,
+    private router: Router
+  ) {}
 
   customer: Customer;
+  cartItems: any[] = [];
   cart: any;
   getNewProductSubscription: Subscription;
   faTimesCircle = faTimesCircle;
   faTrash = faRecycle;
   totalPrice = null;
+  searchString: String = null;
+  showEditItems: boolean = true;
 
   ngOnInit(): void {
     console.log('Init');
+
+    if (this.router.url.includes('order')) {
+      this.showEditItems = false;
+    }
 
     if (!this.getNewProductSubscription) {
       this.getNewProductSubscription = this.server
@@ -51,6 +64,21 @@ export class CartListComponent implements OnInit, OnDestroy {
       console.log(this.customer);
       this.loadCart(this.customer.customer_id_number);
     });
+
+    this.server.getCartSearchString().subscribe((search) => {
+      console.log(search);
+      if (this.cart) {
+        console.log(search);
+        this.searchString = search;
+
+        this.cartItems = this.cart.items.filter((product) => {
+          return product.name
+            .toLowerCase()
+            .includes(this.searchString.toLowerCase());
+        });
+        console.log(this.cartItems);
+      }
+    });
   }
 
   calculateTotalPrice(cart) {
@@ -63,8 +91,9 @@ export class CartListComponent implements OnInit, OnDestroy {
   }
 
   loadCart(id) {
-    this.server.getCart(id).subscribe((data) => {
+    this.server.getCart(id).subscribe((data: any) => {
       this.cart = data;
+      this.cartItems = data.items;
       console.log(this.cart);
       this.calculateTotalPrice(this.cart);
     });

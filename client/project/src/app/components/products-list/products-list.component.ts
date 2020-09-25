@@ -17,14 +17,17 @@ export class ProductsListComponent implements OnInit {
     private auth: AuthService
   ) {}
 
+  products: Product[] = [];
   productsToShow: Product[] = [];
   customer: Customer = null;
+  searchString: String = null;
 
   ngOnInit(): void {
     console.log(this.router.url);
     this.loadInitDataFromServer();
-    this.server.getSearchData().subscribe((data) => {
-      this.updateProductToShowWithSearchData(data);
+    this.server.getAllProducts().subscribe((data: [Product]) => {
+      this.products = data;
+      this.productsToShow = data;
     });
     this.server.getSearchString().subscribe((searchString) => {
       if (searchString.length < 1) {
@@ -35,10 +38,15 @@ export class ProductsListComponent implements OnInit {
       this.customer = customer;
       console.log(customer);
     });
-  }
-
-  updateProductToShowWithSearchData(data) {
-    this.productsToShow = data;
+    this.server.getSearchString().subscribe((search) => {
+      console.log(search);
+      this.searchString = search;
+      this.productsToShow = this.products.filter((product) => {
+        return product.name
+          .toLowerCase()
+          .includes(this.searchString.toLowerCase());
+      });
+    });
   }
 
   loadInitDataFromServer() {

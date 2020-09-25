@@ -4,6 +4,7 @@
     class="remove-cart-icon"
     [icon]="faTrash"
     (click)="onRemoveCart(cart.id)"
+    *ngIf="showEditItems"
   ></fa-icon>
   <div *ngIf="!cart || cart.items.length === 0">
     Your cart is empty
@@ -11,7 +12,7 @@
     Add products from products list on the right
   </div>
   <div *ngIf="cart && cart.items.length > 0">
-    <div class="row" *ngFor="let item of cart.items">
+    <div class="row" *ngFor="let item of cartItems">
       <div class="card cart-product-card shadow-sm mt-3">
         <div class="card-body product-card">
           <div class="item-container">
@@ -20,6 +21,7 @@
               class="remove-product-icon"
               [icon]="faTimesCircle"
               (click)="onRemove(item)"
+              *ngIf="showEditItems"
             ></fa-icon>
             <img
               class="card-img-top"
@@ -40,11 +42,12 @@
         Total Price: {{ totalPrice }}
       </h6>
     </div>
-    <div class="row">
+    <div class="row" *ngIf="showEditItems">
       <button
         routerLink="/order"
         routerLinkActive="active"
         class="mt-3 btn btn-success"
+        (click)="onPlaceOrder()"
       >
         Place order
       </button>

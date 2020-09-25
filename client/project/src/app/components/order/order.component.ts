@@ -18,6 +18,9 @@ export class OrderComponent implements OnInit {
   dates: any = [];
   customer: Customer = null;
   cart: Cart = null;
+  dateError: boolean = false;
+
+  dateMin = new Date().toISOString().split('T')[0];
 
   shippingDetails = new FormGroup({
     city: new FormControl('', [
@@ -42,6 +45,7 @@ export class OrderComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log(this.dateMin);
     this.auth.getCustomer().subscribe((customer) => {
       this.customer = customer;
       console.log(this.customer);
@@ -126,5 +130,21 @@ export class OrderComponent implements OnInit {
           );
         }
       );
+  }
+
+  checkDates(event) {
+    console.log(event.target.value);
+    let count = 0;
+    this.dates.forEach((date) => {
+      if (event.target.value === date.delivery_date.slice(0, 10)) {
+        count = count + 1;
+      }
+    });
+
+    if (count > 2) {
+      this.dateError = true;
+    } else {
+      this.dateError = false;
+    }
   }
 }

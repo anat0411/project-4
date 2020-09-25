@@ -2,22 +2,22 @@
   <a class="navbar-brand" routerLink=""><i class=""></i> LOGO</a>
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav ml-auto headerNav">
-      <li class="nav-item">
+      <li class="nav-item" *ngIf="!isCustomerLoggedIn() && !isAdminLoggedIn()">
         <a class="nav-link" routerLink="login" routerLinkActive="active"
           >Login</a
         >
       </li>
-      <li class="nav-item">
+      <li class="nav-item" *ngIf="!isCustomerLoggedIn() && !isAdminLoggedIn()">
         <a class="nav-link" routerLink="register" routerLinkActive="active"
           >Register</a
         >
       </li>
-      <li class="nav-item">
+      <li class="nav-item" *ngIf="!isCustomerLoggedIn() && !isAdminLoggedIn()">
         <a class="nav-link" routerLink="admin/login" routerLinkActive="active"
           >Admin Login</a
         >
       </li>
-      <li class="nav-item">
+      <li class="nav-item" *ngIf="!isCustomerLoggedIn() && !isAdminLoggedIn()">
         <a
           class="nav-link"
           routerLink="admin/register"
@@ -26,10 +26,10 @@
         >
       </li>
 
-      <li class="nav-item" (click)="onLogout()">
+      <li class="nav-item" (click)="onLogout()" *ngIf="isCustomerLoggedIn()">
         <a class="nav-link">Logout</a>
       </li>
-      <li class="nav-item" (click)="onAdminLogout()">
+      <li class="nav-item" (click)="onAdminLogout()" *ngIf="isAdminLoggedIn()">
         <a class="nav-link">Admin Logout</a>
       </li>
     </ul>

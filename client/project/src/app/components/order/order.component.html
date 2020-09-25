@@ -73,6 +73,8 @@
           class="form-control"
           formControlName="deliveryDate"
           id="deliveryDate"
+          (change)="checkDates($event)"
+          min="{{ dateMin }}"
         />
         <div
           *ngIf="shippingDetails.get('deliveryDate').invalid && showErrors"
@@ -82,6 +84,9 @@
             Delivey Date is required.
           </div>
         </div>
+      </div>
+      <div *ngIf="dateError" class="alert alert-danger">
+        This date is not avaliable. Please choose another date
       </div>
 
       <button class="btn btn-success">Order!</button>
