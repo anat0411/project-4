@@ -5,6 +5,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { Customer } from 'src/app/models/customer';
 import { Subscription } from 'rxjs';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { faRecycle } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-cart-list',
@@ -18,6 +19,7 @@ export class CartListComponent implements OnInit, OnDestroy {
   cart: any;
   getNewProductSubscription: Subscription;
   faTimesCircle = faTimesCircle;
+  faTrash = faRecycle;
   totalPrice = null;
 
   ngOnInit(): void {

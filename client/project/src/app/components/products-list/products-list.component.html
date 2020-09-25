@@ -1,12 +1,12 @@
-<h1 class="text-center">Hello user</h1>
+<h1 class="text-center">Hello {{ customer.firstName }}</h1>
 <app-category-navbar></app-category-navbar>
 <div class="row">
-  <div class="col-md-2"><app-cart-list></app-cart-list></div>
-  <div class="col-md-10">
+  <div class="col-md-3 shadow-sm mr-3"><app-cart-list></app-cart-list></div>
+  <div class="col-md-8 shadow-sm">
     <div class="row">
       <div class="col-md-5" *ngFor="let product of productsToShow">
-        <div class="card" style="width: 18rem">
-          <div class="card-body">
+        <div class="card product-card shadow-sm mt-3">
+          <div class="card-body product-card">
             <p class="card-text text-center">
               <small>{{ product.category_name }}</small>
             </p>
@@ -17,15 +17,20 @@
               alt="Card image cap"
             />
             <p class="card-text">price: {{ product.product_price }}₪</p>
-            <input
-              type="number"
-              class="unitsNumber"
-              id="unitsNumber"
-              (change)="product.units_to_buy = $event.target.value"
-            />
-            <button class="btn btn-primary" (click)="onAddToCart(product)">
-              Add to Cart
-            </button>
+            <div class="row add-row>">
+              <input
+                class="qty-input"
+                type="number"
+                value="1"
+                (change)="product.units_to_buy = $event.target.value"
+              />
+              <button
+                class="btn btn-primary mt-2 product-add-btn"
+                (click)="onAddToCart(product)"
+              >
+                Add to Cart
+              </button>
+            </div>
           </div>
         </div>
       </div>

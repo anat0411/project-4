@@ -1,0 +1,21 @@
+.product-card {
+  display: flex;
+  flex-direction: column;
+  width: 15rem !important;
+  background: #8080800a;
+}
+
+.add-row {
+  align-self: flex-end;
+}
+
+.qty-input {
+  margin-left: auto;
+  width: 45px;
+  height: 38px;
+}
+
+.product-add-btn {
+  max-width: 120px;
+  margin: 0 10px 0 10px !important;
+}

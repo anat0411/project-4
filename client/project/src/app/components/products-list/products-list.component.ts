@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ServerService } from '../../services/server.service';
 import { Product } from '../../models/product';
 import { Router } from '@angular/router';
+import { Customer } from 'src/app/models/customer';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-products-list',
@@ -9,9 +11,14 @@ import { Router } from '@angular/router';
   styleUrls: ['./products-list.component.css'],
 })
 export class ProductsListComponent implements OnInit {
-  constructor(private server: ServerService, private router: Router) {}
+  constructor(
+    private server: ServerService,
+    private router: Router,
+    private auth: AuthService
+  ) {}
 
   productsToShow: Product[] = [];
+  customer: Customer = null;
 
   ngOnInit(): void {
     console.log(this.router.url);
@@ -23,6 +30,10 @@ export class ProductsListComponent implements OnInit {
       if (searchString.length < 1) {
         this.loadInitDataFromServer();
       }
+    });
+    this.auth.getCustomer().subscribe((customer) => {
+      this.customer = customer;
+      console.log(customer);
     });
   }
 

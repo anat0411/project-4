@@ -20,16 +20,16 @@ export class AuthService {
   }
 
   isCustomerAuthenticated(): Boolean {
-    console.log(window.sessionStorage.getItem('email'));
-    const email = window.sessionStorage.getItem('email');
-    if (!email || email === 'null') return false;
+    const isCustomerLoggedIn = window.sessionStorage.getItem(
+      'isCustomerLoggedIn'
+    );
+    if (!isCustomerLoggedIn || isCustomerLoggedIn !== 'true') return false;
     return true;
   }
 
   isAdminAuthenticated(): Boolean {
-    console.log(window.sessionStorage.getItem('email'));
-    const email = window.sessionStorage.getItem('email');
-    if (!email || email === 'null') return false;
+    const isAdminLoggedIn = window.sessionStorage.getItem('isAdminLoggedIn');
+    if (!isAdminLoggedIn || isAdminLoggedIn !== 'true') return false;
     return true;
   }
 
@@ -46,6 +46,8 @@ export class AuthService {
   }
 
   setCustomer(data): void {
+    console.log(data);
+    window.sessionStorage.clear();
     window.sessionStorage.setItem(
       'identification_number',
       data.identification_number
@@ -57,12 +59,31 @@ export class AuthService {
     window.sessionStorage.setItem('email', data.email);
     window.sessionStorage.setItem('city', data.city);
     window.sessionStorage.setItem('street', data.street);
+    window.sessionStorage.setItem('firstName', data.firstname);
+    window.sessionStorage.setItem('lastName', data.lastname);
+    window.sessionStorage.setItem(
+      'isCustomerLoggedIn',
+      (
+        data.email &&
+        data.email !== 'null' &&
+        data.email !== 'undefined'
+      ).toString()
+    );
     this.customer.next(data);
   }
 
   setAdmin(data): void {
+    window.sessionStorage.clear();
     window.sessionStorage.setItem('admin id', data.id);
     window.sessionStorage.setItem('admin email', data.email);
+    window.sessionStorage.setItem(
+      'isAdminLoggedIn',
+      (
+        data.email &&
+        data.email !== 'null' &&
+        data.email !== 'undefined'
+      ).toString()
+    );
     this.admin.next(data);
   }
 
@@ -76,19 +97,28 @@ export class AuthService {
     const city = window.sessionStorage.getItem('city');
     const street = window.sessionStorage.getItem('street');
     const email = window.sessionStorage.getItem('email');
+    const firstName = window.sessionStorage.getItem('firstName');
+    const lastName = window.sessionStorage.getItem('lastName');
+    const isCustomerLoggedIn = window.sessionStorage.getItem(
+      'isCustomerLoggedIn'
+    );
     this.setCustomer({
       identification_number,
       email,
       customer_id_number,
       city,
       street,
+      firstName: firstName,
+      lastName: lastName,
+      isCustomerLoggedIn: isCustomerLoggedIn,
     });
   }
 
   getAdminDataFromSession() {
     const id = window.sessionStorage.getItem('admin id');
     const email = window.sessionStorage.getItem('admin email');
-    this.setAdmin({ id, email });
+    const isAdminLoggedIn = window.sessionStorage.getItem('isAdminLoggedIn');
+    this.setAdmin({ id, email, isAdminLoggedIn: isAdminLoggedIn });
   }
 
   logout() {

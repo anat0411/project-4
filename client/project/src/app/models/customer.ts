@@ -4,4 +4,6 @@ export interface Customer {
   idetification_number: Number;
   city: String;
   street: String;
+  firstName: String;
+  lastName: String;
 }
