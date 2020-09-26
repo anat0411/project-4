@@ -128,6 +128,21 @@ export class ServerService {
     });
   }
 
+  addNewProduct(product) {
+    const body = product;
+    console.log(body);
+    return this.http.post(
+      `${environment.baseUrl.server}/admin/add/product`,
+      body,
+      {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+  }
+
   getDates() {
     return this.http.get(`${environment.baseUrl.server}/get/delivery/dates`, {
       withCredentials: true,

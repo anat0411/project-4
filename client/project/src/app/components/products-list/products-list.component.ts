@@ -4,6 +4,7 @@ import { Product } from '../../models/product';
 import { Router } from '@angular/router';
 import { Customer } from 'src/app/models/customer';
 import { AuthService } from 'src/app/services/auth.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-products-list',
@@ -21,6 +22,7 @@ export class ProductsListComponent implements OnInit {
   productsToShow: Product[] = [];
   customer: Customer = null;
   searchString: String = null;
+  environment = environment;
 
   ngOnInit(): void {
     console.log(this.router.url);

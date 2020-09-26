@@ -1,0 +1,73 @@
+.textfont {
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
+
+.pagetitle {
+  color: #111;
+  font-family: "Helvetica Neue", sans-serif;
+  font-size: 100px;
+  font-weight: bold;
+  letter-spacing: -1px;
+  line-height: 1;
+  text-align: center;
+}
+
+.sub-title {
+  color: #111;
+  font-family: "Open Sans", sans-serif;
+  font-size: 30px;
+  font-weight: 300;
+  line-height: 32px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.paragraph-title {
+  margin-left: 180px;
+  margin-right: 180px;
+}
+
+.conatiner {
+  margin-bottom: 100px;
+}
+
+.image {
+  opacity: 1;
+  height: auto;
+  transition: 0.5s ease;
+  backface-visibility: hidden;
+  width: 500px;
+  height: 300px;
+}
+
+.wrapperTextHover {
+  transition: 0.5s ease;
+  opacity: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.wrapperImage:hover .image {
+  opacity: 0.3;
+}
+
+.wrapperImage:hover .wrapperTextHover {
+  opacity: 1;
+}
+
+.textHover {
+  background-color: #4caf50;
+  color: white;
+  font-size: 16px;
+  padding: 16px 32px;
+}
+
+.wrapperImage {
+  position: relative;
+  width: 50%;
+}

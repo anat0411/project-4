@@ -16,10 +16,11 @@ import { environment } from '../../../environments/environment';
 })
 export class ProductsAddComponent implements OnInit {
   showErrors: boolean = false;
+  product: any;
   categories: any = null;
   public uploader: FileUploader = new FileUploader({
     url: `${environment.baseUrl.server}/admin/upload_product_image`,
-    itemAlias: 'photo',
+    itemAlias: 'image',
   });
 
   constructor(private server: ServerService) {}
@@ -32,7 +33,7 @@ export class ProductsAddComponent implements OnInit {
     });
 
     this.uploader.onAfterAddingFile = (file) => {
-      file.withCredentials = false;
+      file.withCredentials = true;
     };
     this.uploader.onCompleteItem = (
       item: any,
@@ -40,7 +41,12 @@ export class ProductsAddComponent implements OnInit {
       status: any,
       headers: any
     ) => {
-      console.log('ImageUpload:uploaded:', item, status, response);
+      // console.log('ImageUpload:uploaded: ', item, status, response);
+      console.log(JSON.parse(response).imagePath);
+      this.product.product_image = JSON.parse(response).imagePath;
+      this.server.addNewProduct(this.product).subscribe((response) => {
+        console.log(response);
+      });
     };
   }
 
@@ -59,11 +65,16 @@ export class ProductsAddComponent implements OnInit {
   });
 
   onFormSubmit() {
-    console.log(this.addProductForm.get('productCategory').value);
-
-    this.uploader.uploadAll();
-
     if (this.addProductForm.valid) {
+      this.uploader.uploadAll();
+      // image upload
+      this.showErrors = false;
+
+      this.product = {
+        name: this.addProductForm.get('productName').value,
+        category_id: this.addProductForm.get('productCategory').value,
+        product_price: this.addProductForm.get('productPrice').value,
+      };
     } else {
       this.showErrors = true;
       return;

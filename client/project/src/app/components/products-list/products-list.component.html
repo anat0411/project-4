@@ -20,7 +20,7 @@
             <h5 class="card-title">{{ product.name }}</h5>
             <img
               class="card-img-top"
-              src="{{ product.product_image }}"
+              src="{{ environment.baseUrl.images + product.product_image }}"
               alt="Card image cap"
             />
             <p class="card-text">price: {{ product.product_price }}₪</p>

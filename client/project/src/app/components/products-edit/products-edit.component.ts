@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import {
   FormGroup,
   FormBuilder,
@@ -17,8 +17,11 @@ import { ServerService } from 'src/app/services/server.service';
   styleUrls: ['./products-edit.component.css'],
 })
 export class ProductsEditComponent implements OnInit {
+  @Input() product;
+
   showErrors: boolean = false;
-  product: Product;
+  categories: any = null;
+  loadingData: boolean = true;
 
   constructor(
     private router: Router,
@@ -26,7 +29,29 @@ export class ProductsEditComponent implements OnInit {
     private server: ServerService
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    console.log(this.product);
+
+    this.server.getCategories().subscribe((categories: [any]) => {
+      console.log(categories);
+
+      this.categories = categories;
+      let category = null;
+      categories.forEach((c) => {
+        if (c.id === this.product.product_category) {
+          category = c;
+        }
+      });
+      console.log(category);
+      this.editProductForm.setValue({
+        productName: this.product.name,
+        productPrice: this.product.product_price,
+        productImage: this.product.product_image,
+        productCategory: category.category_id,
+      });
+      this.loadingData = false;
+    });
+  }
 
   editProductForm = new FormGroup({
     productName: new FormControl('', [
@@ -39,17 +64,26 @@ export class ProductsEditComponent implements OnInit {
       Validators.minLength(1),
     ]),
     productImage: new FormControl('', [Validators.required]),
+    productCategory: new FormControl('', [Validators.required]),
   });
 
   onFormSubmit() {
     const productName = this.editProductForm.get('productName').value;
     const productPrice = this.editProductForm.get('productPrice').value;
     const productImage = this.editProductForm.get('productImage').value;
+    const productCategory = this.editProductForm.get('productCategory').value;
+
+    const data = {
+      name: productName,
+      product_price: productPrice,
+      product_image: productImage,
+      product_category: productCategory,
+    };
 
     this.http
       .post(
         `${environment.baseUrl.server}/admin/edit/product/${this.product.product_id}`,
-        { productName, productPrice, productImage },
+        { productName, productPrice, productImage, productCategory },
         {
           withCredentials: true,
         }

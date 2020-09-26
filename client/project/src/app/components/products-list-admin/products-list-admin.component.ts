@@ -3,6 +3,7 @@ import { ServerService } from '../../services/server.service';
 import { Product } from '../../models/product';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-products-list-admin',
@@ -14,6 +15,9 @@ export class ProductsListAdminComponent implements OnInit {
 
   faEdit = faEdit;
   faPlus = faPlus;
+  environment = environment;
+  editingProduct = false;
+  productToEdit = null;
 
   productsToShow: Product[] = [];
 
@@ -22,5 +26,10 @@ export class ProductsListAdminComponent implements OnInit {
       this.productsToShow = data;
       console.log(this.productsToShow);
     });
+  }
+
+  onEdit(product) {
+    this.editingProduct = true;
+    this.productToEdit = product
   }
 }

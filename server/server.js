@@ -457,69 +457,51 @@ app.route("/api/products/search/:input").get(isCustomerAuth, (req, res) => {
   );
 });
 
-app
-  .route("/api/admin/add/product")
-  .post(isAdminAuth, upload.single("image"), (req, res) => {
-    const { name, category_id, product_price } = req.body;
-    const product_image = req.file;
+app.route("/api/admin/add/product").post(isAdminAuth, (req, res) => {
+  const { name, category_id, product_price, product_image } = req.body;
 
-    if (
-      !name ||
-      !category_id ||
-      !product_price ||
-      !product_image ||
-      typeof name != "string" ||
-      typeof category_id != "number" ||
-      typeof product_price != "number" ||
-      typeof product_image != "string"
-    ) {
-      return res.json({ success: false, msg: "Missing data ADD PRODUCT " });
-    }
+  // if (
+  //   !name ||
+  //   !category_id ||
+  //   !product_price ||
+  //   !product_image ||
+  //   typeof name != "string" ||
+  //   typeof category_id != "number" ||
+  //   typeof product_price != "number" ||
+  //   typeof product_image != "string"
+  // ) {
+  //   return res.json({ success: false, msg: "Missing data ADD PRODUCT " });
+  // }
 
-    // if (
-    //   !name ||
-    //   !category_id ||
-    //   !product_price ||
-    //   !product_image ||
-    //   typeof name !== String ||
-    //   typeof category_id !== Number ||
-    //   typeof product_price !== Number ||
-    //   typeof product_image !== String
-    // ) {
-    //   return res.json({ success: false, msg: "Missing fields ADD VACATION" });
-    // }
-
-    pool.query(
-      `
+  pool.query(
+    `
     INSERT INTO products (name, category_id, product_price, product_image)
     VALUES (?,?,?,?)
           `,
-      [name, category_id, product_price, product_image.path],
-      (err, results) => {
-        if (err) throw err;
-        if (results) {
-          res.json({ success: true });
-        } else {
-          res.json({ success: false });
-        }
+    [name, category_id, product_price, product_image],
+    (err, results) => {
+      if (err) throw err;
+      if (results) {
+        res.json({ success: true });
+      } else {
+        res.json({ success: false });
       }
-    );
-  });
+    }
+  );
+});
 
 app
   .route("/api/admin/upload_product_image")
   .post(upload.single("image"), isAdminAuth, (req, res) => {
     const product_image = req.file;
 
-    if (!product_image || typeof product_image != "string") {
+    console.log("*************", product_image);
+
+    if (!product_image || typeof product_image.path != "string") {
       return res.json({
         success: false,
         msg: "Missing data ADD PRODUCT IMAGE",
       });
-    }
-
-    if (!product_image || typeof product_image != "string") {
-      return res.json({ success: false, msg: "Missing fields EDIT product" });
     }
 
     console.log(product_image.path);
@@ -539,6 +521,11 @@ app
     //     }
     //   }
     // );
+
+    return res.json({
+      success: true,
+      imagePath: product_image.path,
+    });
   });
 
 app.route("/api/admin/edit/product/:id").get(isAdminAuth, (req, res) => {

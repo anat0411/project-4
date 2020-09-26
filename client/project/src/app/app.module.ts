@@ -26,6 +26,7 @@ import { SerachInCartComponent } from './components/serach-in-cart/serach-in-car
 import { ProductsEditComponent } from './components/products-edit/products-edit.component';
 import { ProductsAddComponent } from './components/products-add/products-add.component';
 import { FileUploadModule } from 'ng2-file-upload';
+import { FirstPageComponent } from './components/first-page/first-page.component';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { FileUploadModule } from 'ng2-file-upload';
     SerachInCartComponent,
     ProductsEditComponent,
     ProductsAddComponent,
+    FirstPageComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,4 +1,4 @@
-<div class="col-md-6 mb-3">
+<div class="col-md-6 mb-3" *ngIf="!loadingData">
   <div class="card" style="width: 18rem">
     <div class="card-body">
       <form [formGroup]="editProductForm">
@@ -47,7 +47,30 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="productImage"> Product Price </label>
+          <label for="productCategory"> Product Category </label>
+          <select
+            id="productCategory"
+            name="productCategory"
+            formControlName="productCategory"
+          >
+            <option
+              *ngFor="let category of categories"
+              value="{{ category.category_id }}"
+            >
+              {{ category.category_name }}
+            </option>
+          </select>
+          <div
+            *ngIf="editProductForm.get('productCategory').invalid && showErrors"
+            class="alert alert-danger"
+          >
+            <div *ngIf="editProductForm.get('productCategory').errors.required">
+              Product Category is required.
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="productImage"> Product Image </label>
           <input
             type="image"
             class="form-control"
@@ -62,7 +85,6 @@
               Product Image is required.
             </div>
           </div>
-          <div>Category Name:</div>
         </div>
         <button type="submit" class="btn btn-success">Add</button>
       </form>

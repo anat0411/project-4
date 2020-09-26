@@ -61,6 +61,7 @@
               name="photo"
               ng2FileSelect
               [uploader]="uploader"
+              formControlName="productImage"
             />
             <div
               *ngIf="addProductForm.get('productImage').invalid && showErrors"
