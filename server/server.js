@@ -98,11 +98,16 @@ app.route("/auth/admin/verify").get(isAdminAuth, (req, res) => {
 
 app.route("/api/login").post((req, res) => {
   const { email, password } = req.body;
-  console.log("BODY LOGIN --------- ", req.body.email);
 
-  // if (!email || !password || !email.includes("@")) {
-  //   return res.json({ success: false, msg: "Missing data" });
-  // }
+  if (
+    !email ||
+    !password ||
+    !email.includes("@") ||
+    typeof email != "string" ||
+    typeof password != "string"
+  ) {
+    return res.json({ success: false, msg: "Missing data" });
+  }
 
   pool.query(
     `
@@ -162,9 +167,15 @@ app.get("/api/logout", isCustomerAuth, (req, res) => {
 app.route("/api/admin/login").post((req, res) => {
   const { email, password } = req.body;
 
-  // if (!email || !password || !email.includes("@")) {
-  //   return res.json({ success: false, msg: "Missing fields" });
-  // }
+  if (
+    !email ||
+    !password ||
+    !email.includes("@") ||
+    typeof email != "string" ||
+    typeof password != "string"
+  ) {
+    return res.json({ success: false, msg: "Missing data" });
+  }
 
   pool.query(
     `
@@ -224,25 +235,35 @@ app.route("/api/register").post((req, res) => {
     city,
     street,
   } = req.body;
-  // if (
-  //   !firstname ||
-  //   !lastname ||
-  //   !email ||
-  //   !identification_number ||
-  //   !password ||
-  //   !city ||
-  //   !street ||
-  //   typeof firstname !== String ||
-  //   typeof lastname !== String ||
-  //   typeof email !== String ||
-  //   typeof identification_number !== Number ||
-  //   typeof password !== String ||
-  //   typeof city !== String ||
-  //   typeof street !== String ||
-  //   !email.includes("@")
-  // ) {
-  //   return res.json({ success: false, msg: "Missing data" });
-  // }
+  if (
+    !firstName ||
+    !lastName ||
+    !email ||
+    !identification_number ||
+    !password ||
+    !city ||
+    !street ||
+    typeof firstName != "string" ||
+    typeof lastName != "string" ||
+    typeof email != "string" ||
+    typeof identification_number != "number" ||
+    typeof password != "string" ||
+    typeof city != "string" ||
+    typeof street != "string" ||
+    !email.includes("@")
+  ) {
+    return res.json({ success: false, msg: "Missing data" });
+  }
+
+  if (
+    !email ||
+    !password ||
+    !email.includes("@") ||
+    typeof email != "string" ||
+    typeof password != "string"
+  ) {
+    return res.json({ success: false, msg: "Missing data" });
+  }
 
   bcrypt.hash(password, 10, (err, hash) => {
     if (err) throw err;
@@ -274,21 +295,21 @@ app.route("/api/register").post((req, res) => {
 
 app.route("/api/admin/register").post((req, res) => {
   const { firstName, lastName, email, adminIdNumber, password } = req.body;
-  // if (
-  //   !firstname ||
-  //   !lastname ||
-  //   !email ||
-  //   !admin_id_number ||
-  //   !password ||
-  //   typeof firstname !== String ||
-  //   typeof lastname !== String ||
-  //   typeof email !== String ||
-  //   typeof admin_id_number !== Number ||
-  //   typeof password !== String ||
-  //   !email.includes("@")
-  // ) {
-  //   return res.json({ success: false, msg: "Missing fields" });
-  // }
+  if (
+    !firstName ||
+    !lastName ||
+    !email ||
+    !adminIdNumber ||
+    !password ||
+    typeof firstName != "string" ||
+    typeof lastName != "string" ||
+    typeof email != "string" ||
+    typeof adminIdNumber != "number" ||
+    typeof password != "string" ||
+    !email.includes("@")
+  ) {
+    return res.json({ success: false, msg: "Missing fields" });
+  }
 
   bcrypt.hash(password, 10, (err, hash) => {
     if (err) throw err;
@@ -351,7 +372,9 @@ app.route("/api/admin/products").get(isAdminAuth, (req, res) => {
 
 app.route("/api/:category").get(isCustomerAuth, (req, res) => {
   const category = req.params.category;
-  console.log(category);
+  if (!category || typeof category != "string") {
+    return res.json({ success: false, msg: "Missing data GET CATEGORY" });
+  }
   pool.query(
     `
     SELECT c.category_id, c.category_name, p.product_id, p.name, p.product_price
@@ -367,8 +390,28 @@ app.route("/api/:category").get(isCustomerAuth, (req, res) => {
   );
 });
 
+app.route("/api/admin/get_categories").get(isAdminAuth, (req, res) => {
+  pool.query(
+    `
+    SELECT * FROM category`,
+    [],
+    (err, results, fields) => {
+      if (err) throw err;
+      res.json(results);
+    }
+  );
+});
+
 app.route("/api/cart/:customerid").get((req, res) => {
   const customer_id_number = req.params.customerid;
+
+  if (!customer_id_number || typeof customer_id_number != "number") {
+    return res.json({
+      success: false,
+      msg: "Missing data GET CART CUSTOMER ID",
+    });
+  }
+
   console.log("customer id number -----------------------", customer_id_number);
   pool.query(
     `SELECT * from carts WHERE customer_id_number=? `,
@@ -414,49 +457,97 @@ app.route("/api/products/search/:input").get(isCustomerAuth, (req, res) => {
   );
 });
 
-app.route("/api/admin/add/product").post(upload.single("image"), (req, res) => {
-  const { name, category_id, product_price } = req.body;
-  const product_image = req.file;
-  if (
-    !name ||
-    !category_id ||
-    !product_price ||
-    !product_image ||
-    typeof name !== String ||
-    typeof category_id !== Number ||
-    typeof product_price !== Number ||
-    typeof product_image !== String
-  ) {
-    return res.json({ success: false, msg: "Missing fields ADD VACATION" });
-  }
+app
+  .route("/api/admin/add/product")
+  .post(isAdminAuth, upload.single("image"), (req, res) => {
+    const { name, category_id, product_price } = req.body;
+    const product_image = req.file;
 
-  pool.query(
-    `
+    if (
+      !name ||
+      !category_id ||
+      !product_price ||
+      !product_image ||
+      typeof name != "string" ||
+      typeof category_id != "number" ||
+      typeof product_price != "number" ||
+      typeof product_image != "string"
+    ) {
+      return res.json({ success: false, msg: "Missing data ADD PRODUCT " });
+    }
+
+    // if (
+    //   !name ||
+    //   !category_id ||
+    //   !product_price ||
+    //   !product_image ||
+    //   typeof name !== String ||
+    //   typeof category_id !== Number ||
+    //   typeof product_price !== Number ||
+    //   typeof product_image !== String
+    // ) {
+    //   return res.json({ success: false, msg: "Missing fields ADD VACATION" });
+    // }
+
+    pool.query(
+      `
     INSERT INTO products (name, category_id, product_price, product_image)
     VALUES (?,?,?,?)
           `,
-    [name, category_id, product_price, product_image.path],
-    (err, results) => {
-      if (err) throw err;
-      if (results) {
-        res.json({ success: true });
-      } else {
-        res.json({ success: false });
+      [name, category_id, product_price, product_image.path],
+      (err, results) => {
+        if (err) throw err;
+        if (results) {
+          res.json({ success: true });
+        } else {
+          res.json({ success: false });
+        }
       }
-    }
-  );
-});
-
-app.route("/api/admin/edit/product/:id").get(isAdminAuth, (req, res) => {
-  const id = req.params.id;
-  pool.query(`SELECT * FROM products`, [id], (err, results, fields) => {
-    if (err) throw err;
-    res.json(results);
+    );
   });
-});
+
+app
+  .route("/api/admin/upload_product_image")
+  .post(upload.single("image"), isAdminAuth, (req, res) => {
+    const product_image = req.file;
+
+    if (!product_image || typeof product_image != "string") {
+      return res.json({
+        success: false,
+        msg: "Missing data ADD PRODUCT IMAGE",
+      });
+    }
+
+    if (!product_image || typeof product_image != "string") {
+      return res.json({ success: false, msg: "Missing fields EDIT product" });
+    }
+
+    console.log(product_image.path);
+
+    // pool.query(
+    //   `
+    // INSERT INTO products (name, category_id, product_price, product_image)
+    // VALUES (?,?,?,?)
+    //       `,
+    //   [product_image.path],
+    //   (err, results) => {
+    //     if (err) throw err;
+    //     if (results) {
+    //       res.json({ success: true });
+    //     } else {
+    //       res.json({ success: false });
+    //     }
+    //   }
+    // );
+  });
 
 app.route("/api/admin/edit/product/:id").get(isAdminAuth, (req, res) => {
   const id = req.params.id;
+
+  if (!id || typeof id != "number") {
+    return res.json({ success: false, msg: "Missing data EDIT PRODUCT ID " });
+  }
+
   pool.query(`SELECT * FROM products`, [id], (err, results, fields) => {
     if (err) throw err;
     res.json(results);
@@ -472,16 +563,19 @@ app
 
     if (
       !name ||
+      !id ||
       !category_id ||
       !product_price ||
       !product_image ||
-      typeof name !== String ||
-      typeof category_id !== Number ||
-      typeof product_price !== Number ||
-      typeof product_image !== String
+      typeof name != "string" ||
+      typeof id != "number" ||
+      typeof category_id != "number" ||
+      typeof product_price != "number" ||
+      typeof product_image != "string"
     ) {
       return res.json({ success: false, msg: "Missing fields EDIT product" });
     }
+
     if (product_image) {
       pool.query(
         `
@@ -520,14 +614,20 @@ app
 app.route("/api/add/item/cart").post((req, res) => {
   const { product_id, cart_id, units } = req.body;
   const customer_id_number = req.session.user.customer_id_number;
-  console.log(
-    "SESSION-----------------------------------------------------------------",
-    req.session
-  );
-  console.log("REQ", req.body);
-  // if (typeof product_id !== Number) {
-  //   return res.json({ success: false, msg: "ID NOT A NUMBER" });
-  // }
+
+  if (
+    !product_id ||
+    !cart_id ||
+    !units ||
+    !customer_id_number ||
+    typeof product_id != "number" ||
+    typeof cart_id != "number" ||
+    typeof units != "number" ||
+    typeof customer_id_number != "number"
+  ) {
+    return res.json({ success: false, msg: "Missing fields EDIT product" });
+  }
+
   pool.query(
     `SELECT * FROM products WHERE product_id=?`,
     [product_id],
@@ -630,9 +730,9 @@ app.route("/api/add/item/cart").post((req, res) => {
 
 app.route("/api/delete/cart/:id").delete(isCustomerAuth, (req, res) => {
   const id = req.params.id;
-  // if (typeof id !== Number) {
-  //   return res.json({ success: false, msg: "ID NOT A NUMBER" });
-  // }
+  if (typeof id != "number") {
+    return res.json({ success: false, msg: "ID NOT A NUMBER" });
+  }
   console.log(id);
   pool.query(`DELETE FROM cart_items WHERE cart_id=? `, id, (err, results) => {
     if (err) throw err;
@@ -655,9 +755,9 @@ app.route("/api/delete/cart/:id").delete(isCustomerAuth, (req, res) => {
 
 app.route("/api/delete/cart/item/:id").delete(isCustomerAuth, (req, res) => {
   const id = req.params.id;
-  // if (typeof id !== Number) {
-  //   return res.json({ success: false, msg: "ID NOT A NUMBER" });
-  // }
+  if (!id || typeof id != "number") {
+    return res.json({ success: false, msg: "Missing data DELETE CART ID" });
+  }
   pool.query(
     `DELETE FROM cart_items WHERE item_id=? `,
     [id],
@@ -699,9 +799,9 @@ app.route("/api/get/delivery/dates").get(isCustomerAuth, (req, res) => {
 
 app.route("/api/order/cart/:id").post(isCustomerAuth, (req, res) => {
   const id = req.params.id;
-  // if (typeof id !== Number) {
-  //   return res.json({ success: false, msg: "ID NOT A NUMBER" });
-  // }
+  if (!id || typeof id != "number") {
+    return res.json({ success: false, msg: "Missing data ORDER CART ID" });
+  }
   pool.query(
     `select SUM(item_price) AS cart_total_price from cart_items WHERE cart_id=?
       `,
@@ -712,27 +812,19 @@ app.route("/api/order/cart/:id").post(isCustomerAuth, (req, res) => {
       if (results) {
         console.log("RESULTS ", results[0].cart_total_price);
         const total_price = results[0].cart_total_price;
-        const {
-          customer_id_number,
-          cart_id,
-          city,
-          street,
-          delivery_date,
-        } = req.body;
+        const { customer_id_number, city, street, delivery_date } = req.body;
         if (
           !customer_id_number ||
           !id ||
           !city ||
           !street ||
           !delivery_date ||
-          !total_price
-          // ||
-          // typeof identification_number !== Number ||
-          // typeof cart_id !== Number ||
-          // typeof total_price !== Number ||
-          // typeof city !== String ||
-          // typeof street !== String ||
-          // typeof delivery_date !== String
+          !total_price ||
+          typeof customer_id_number != "number" ||
+          typeof total_price != "number" ||
+          typeof city != "string" ||
+          typeof street != "string" ||
+          typeof delivery_date != "string"
         ) {
           return res.json({ success: false, msg: "Missing fields ORDER" });
         }

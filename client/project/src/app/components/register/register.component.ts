@@ -106,7 +106,7 @@ export class RegisterComponent implements OnInit {
       .subscribe(
         (resp: any) => {
           console.log(resp);
-          const customerData = { email: resp.email, id: resp.id };
+          // const customerData = { email: resp.email, id: resp.id };
           this.auth.setCustomer(customerData);
 
           console.log('registered_____________');

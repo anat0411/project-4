@@ -1,6 +1,7 @@
-<h1>Login</h1>
+<h1 class="text-center my-3 mb-3">Admins Login</h1>
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-md-3"></div>
+  <div class="col-md-6 mt-3">
     <form [formGroup]="loginAdminForm" (ngSubmit)="onAdminFormSubmit()">
       <div class="form-group">
         <label for="email"> Email </label>
@@ -57,7 +58,11 @@
       <div *ngIf="errorLogin" class="alert alert-danger">
         Wrong Email or Password
       </div>
-      <button type="submit" class="btn btn-success">Login</button>
+      <div class="text-center">
+        <button type="submit" class="btn btn-success font-weight-bold">
+          Login
+        </button>
+      </div>
     </form>
   </div>
 </div>

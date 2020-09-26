@@ -25,6 +25,7 @@ import { OrderFinishedPageComponent } from './components/order-finished-page/ord
 import { SerachInCartComponent } from './components/serach-in-cart/serach-in-cart.component';
 import { ProductsEditComponent } from './components/products-edit/products-edit.component';
 import { ProductsAddComponent } from './components/products-add/products-add.component';
+import { FileUploadModule } from 'ng2-file-upload';
 
 @NgModule({
   declarations: [
@@ -52,6 +53,7 @@ import { ProductsAddComponent } from './components/products-add/products-add.com
     ReactiveFormsModule,
     FormsModule,
     FontAwesomeModule,
+    FileUploadModule,
   ],
   providers: [OnlyLoggedInCustomer, OnlyLoggedInAdmin],
   bootstrap: [AppComponent],

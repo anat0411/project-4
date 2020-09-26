@@ -89,7 +89,7 @@ export class RegisterAdminComponent implements OnInit {
       .subscribe(
         (resp: any) => {
           console.log(resp);
-          const adminData = { email: resp.email, id: resp.id };
+          // const adminData = { email: resp.email, id: resp.id };
           this.auth.setAdmin(adminData);
 
           console.log('registered_____________');

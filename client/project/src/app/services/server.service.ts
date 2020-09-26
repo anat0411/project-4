@@ -161,6 +161,15 @@ export class ServerService {
     });
   }
 
+  getCategories() {
+    return this.http.get(`${environment.baseUrl.server}/admin/get_categories`, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  }
+
   removeItemFromCart(item) {
     const item_id = item.item_id;
     const body = {

@@ -3,7 +3,7 @@
     <div class="col-md-3"></div>
     <div class="card col-md-6" style="width: 18rem">
       <div class="card-body">
-        <form [formGroup]="addProductForm">
+        <form [formGroup]="addProductForm" (ngSubmit)="onFormSubmit()">
           <div class="form-group">
             <label for="productName"> Product Name </label>
             <input
@@ -50,11 +50,17 @@
           </div>
           <div class="form-group">
             <label for="productImage"> Product Image </label>
-            <input
+            <!-- <input
               type="image"
               class="form-control"
               formControlName="productImage"
               id="productImage"
+            /> -->
+            <input
+              type="file"
+              name="photo"
+              ng2FileSelect
+              [uploader]="uploader"
             />
             <div
               *ngIf="addProductForm.get('productImage').invalid && showErrors"
@@ -67,12 +73,18 @@
           </div>
           <div class="form-group">
             <label for="productCategory"> Product Category </label>
-            <input
-              type="text"
-              class="form-control"
-              formControlName="productCategory"
+            <select
               id="productCategory"
-            />
+              name="productCategory"
+              formControlName="productCategory"
+            >
+              <option
+                *ngFor="let category of categories"
+                value="{{ category.category_id }}"
+              >
+                {{ category.category_name }}
+              </option>
+            </select>
             <div
               *ngIf="
                 addProductForm.get('productCategory').invalid && showErrors
