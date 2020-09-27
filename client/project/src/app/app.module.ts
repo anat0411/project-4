@@ -27,6 +27,7 @@ import { ProductsEditComponent } from './components/products-edit/products-edit.
 import { ProductsAddComponent } from './components/products-add/products-add.component';
 import { FileUploadModule } from 'ng2-file-upload';
 import { FirstPageComponent } from './components/first-page/first-page.component';
+import { AboutComponent } from './components/about/about.component';
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { FirstPageComponent } from './components/first-page/first-page.component
     ProductsEditComponent,
     ProductsAddComponent,
     FirstPageComponent,
+    AboutComponent,
   ],
   imports: [
     BrowserModule,

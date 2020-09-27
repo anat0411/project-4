@@ -11,6 +11,7 @@ import { OrderFinishedPageComponent } from './components/order-finished-page/ord
 import { ProductsAddComponent } from './components/products-add/products-add.component';
 import { AuthService } from './services/auth.service';
 import { FirstPageComponent } from './components/first-page/first-page.component';
+import { AboutComponent } from './components/about/about.component';
 
 @Injectable()
 export class OnlyLoggedInCustomer implements CanActivate {
@@ -41,6 +42,7 @@ export class OnlyLoggedInAdmin implements CanActivate {
 
 const routes: Routes = [
   { path: '', component: FirstPageComponent },
+  { path: 'about', component: AboutComponent },
   { path: 'admin/login', component: LoginAdminComponent },
   { path: 'login', component: LoginComponent },
   { path: 'admin/register', component: RegisterAdminComponent },
