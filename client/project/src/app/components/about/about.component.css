@@ -1,0 +1,15 @@
+.logoImage {
+  height: 300px;
+  width: 400px;
+}
+
+a:visited,
+a:link {
+  color: black;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+.aboutText {
+  font-family: "auto";
+}

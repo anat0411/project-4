@@ -73,6 +73,10 @@ export class ProductsEditComponent implements OnInit {
       });
   }
 
+  onCancel() {
+    this.editingProductChange.emit(false);
+  }
+
   getCategories() {
     this.server.getCategories().subscribe((categories: [any]) => {
       console.log(categories);
