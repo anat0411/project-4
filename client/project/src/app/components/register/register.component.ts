@@ -111,6 +111,7 @@ export class RegisterComponent implements OnInit {
 
           console.log('registered_____________');
           this.onRegister();
+          this.router.navigateByUrl('/products-list');
         },
         (errorResp) => {
           console.log(

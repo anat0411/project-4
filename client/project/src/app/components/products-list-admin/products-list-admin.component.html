@@ -1,39 +1,37 @@
-<h1 class="mb-3 text-center">Hello Admin</h1>
+<h1 class="mb-3 text-center mt-3">Hello Admin</h1>
 <div *ngIf="!editingProduct">
   <button
-    class="row btn btn-outline-primary"
+    class="row btn btn-outline-secondary ml-3 mb-3"
     routerLink="/admin/add/product"
     routerLinkActive="active"
   >
-    <p>
+    <small>
       Add Product
-      <fa-icon class="close-icon col-md-1" [icon]="faPlus"></fa-icon>
-    </p>
+      <fa-icon class="close-icon ml-1" [icon]="faPlus"></fa-icon>
+    </small>
   </button>
-  <div class="col-md-10 mt-3">
-    <div class="row">
-      <div class="col-md-6 mb-3" *ngFor="let product of productsToShow">
-        <div class="card" style="width: 18rem">
-          <div class="card-body">
-            <fa-icon
-              class="close-icon"
-              [icon]="faEdit"
-              (click)="onEdit(product)"
-            ></fa-icon>
-            <p class="card-text text-center">
-              <small>Catrgory: {{ product.category_name }}</small>
-            </p>
-            <p>
-              <small>Product Id: {{ product.product_id }}</small>
-            </p>
-            <h5 class="card-title">{{ product.name }}</h5>
-            <img
-              class="card-img-top"
-              src="{{ environment.baseUrl.images + product.product_image }}"
-              alt="Card image cap"
-            />
-            <p class="card-text">price: {{ product.product_price }}₪</p>
-          </div>
+  <div class="row">
+    <div class="col-md-5 mb-3" *ngFor="let product of productsToShow">
+      <div class="card cardProduct">
+        <div class="card-body">
+          <fa-icon
+            class="close-icon"
+            [icon]="faEdit"
+            (click)="onEdit(product)"
+          ></fa-icon>
+          <p class="card-text text-center">
+            <small>Catrgory: {{ product.category_name }}</small>
+          </p>
+          <p>
+            <small>Product Id: {{ product.product_id }}</small>
+          </p>
+          <h5 class="card-title">{{ product.name }}</h5>
+          <img
+            class="card-img-top imgProduct"
+            src="{{ environment.baseUrl.images + product.product_image }}"
+            alt="Card image cap"
+          />
+          <p class="card-text">price: {{ product.product_price }}₪</p>
         </div>
       </div>
     </div>

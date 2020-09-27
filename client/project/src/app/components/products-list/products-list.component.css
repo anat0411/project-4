@@ -19,3 +19,8 @@
   max-width: 120px;
   margin: 0 10px 0 10px !important;
 }
+
+.imgCard {
+  height: 120px;
+  width: 140px;
+}

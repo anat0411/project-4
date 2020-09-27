@@ -8,7 +8,10 @@
         class="nav-item mr-3 ml-3"
         *ngIf="!isCustomerLoggedIn() && !isAdminLoggedIn()"
       >
-        <a class="nav-link" routerLink="about" routerLinkActive="active"
+        <a
+          class="nav-link linkNavbar"
+          routerLink="about"
+          routerLinkActive="active"
           >About</a
         >
       </li>
@@ -16,7 +19,10 @@
         class="nav-item mr-3 ml-3"
         *ngIf="!isCustomerLoggedIn() && !isAdminLoggedIn()"
       >
-        <a class="nav-link" routerLink="login" routerLinkActive="active"
+        <a
+          class="nav-link linkNavbar"
+          routerLink="login"
+          routerLinkActive="active"
           >Login</a
         >
       </li>
@@ -24,7 +30,10 @@
         class="nav-item mr-3 ml-3"
         *ngIf="!isCustomerLoggedIn() && !isAdminLoggedIn()"
       >
-        <a class="nav-link" routerLink="register" routerLinkActive="active"
+        <a
+          class="nav-link linkNavbar"
+          routerLink="register"
+          routerLinkActive="active"
           >Register</a
         >
       </li>
@@ -32,7 +41,10 @@
         class="nav-item mr-3 ml-3"
         *ngIf="!isCustomerLoggedIn() && !isAdminLoggedIn()"
       >
-        <a class="nav-link" routerLink="admin/login" routerLinkActive="active"
+        <a
+          class="nav-link linkNavbar"
+          routerLink="admin/login"
+          routerLinkActive="active"
           >Admin Login</a
         >
       </li>
@@ -41,7 +53,7 @@
         *ngIf="!isCustomerLoggedIn() && !isAdminLoggedIn()"
       >
         <a
-          class="nav-link"
+          class="nav-link linkNavbar"
           routerLink="admin/register"
           routerLinkActive="active"
           >Admin Register</a
@@ -53,14 +65,14 @@
         (click)="onLogout()"
         *ngIf="isCustomerLoggedIn()"
       >
-        <a class="nav-link">Logout</a>
+        <a class="nav-link linkNavbar">Logout</a>
       </li>
       <li
         class="nav-item mr-3 ml-3"
         (click)="onAdminLogout()"
         *ngIf="isAdminLoggedIn()"
       >
-        <a class="nav-link">Admin Logout</a>
+        <a class="nav-link linkNavbar">Admin Logout</a>
       </li>
     </ul>
   </div>
