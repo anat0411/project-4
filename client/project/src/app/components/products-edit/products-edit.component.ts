@@ -80,11 +80,13 @@ export class ProductsEditComponent implements OnInit {
   getCategories() {
     this.server.getCategories().subscribe((categories: [any]) => {
       console.log(categories);
-
+      console.log(this.product);
       this.categories = categories;
       let category = null;
       categories.forEach((c) => {
-        if (c.id === this.product.product_category) {
+        console.log(c);
+
+        if (c.category_id.toString() === this.product.category_id.toString()) {
           category = c;
         }
       });
@@ -99,6 +101,18 @@ export class ProductsEditComponent implements OnInit {
     });
   }
 
+  getCategoryNameById(id) {
+    console.log(id);
+    console.log(this.categories);
+    let category_name = null;
+    this.categories.forEach((c) => {
+      if (c.category_id.toString() === id.toString()) {
+        category_name = c.category_name;
+      }
+    });
+    return category_name;
+  }
+
   editProductForm = new FormGroup({
     productName: new FormControl('', [
       Validators.required,
@@ -109,7 +123,7 @@ export class ProductsEditComponent implements OnInit {
       Validators.required,
       Validators.minLength(1),
     ]),
-    productImage: new FormControl('', [Validators.required]),
+    productImage: new FormControl(''),
     productCategory: new FormControl('', [Validators.required]),
   });
 
@@ -122,9 +136,12 @@ export class ProductsEditComponent implements OnInit {
       this.product.product_price = this.editProductForm.get(
         'productPrice'
       ).value;
-      this.product.product_category = this.editProductForm.get(
+      this.product.category_id = this.editProductForm.get(
         'productCategory'
       ).value;
+      this.product.category_name = this.getCategoryNameById(
+        this.product.category_id
+      );
 
       const productImage = this.editProductForm.get('productImage').value;
 

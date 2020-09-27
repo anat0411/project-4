@@ -46,16 +46,14 @@ export class OrderComponent implements OnInit {
 
   ngOnInit(): void {
     console.log(this.dateMin);
-    this.auth.getCustomer().subscribe((customer) => {
-      this.customer = customer;
-      console.log(this.customer);
-      this.server
-        .getCart(customer.customer_id_number)
-        .subscribe((cart: Cart) => {
-          this.cart = cart;
-          console.log(this.cart);
-        });
-    });
+    this.customer = this.auth.getCustomerDataFromSession();
+    console.log(this.customer);
+    this.server
+      .getCart(this.customer.customer_id_number)
+      .subscribe((cart: Cart) => {
+        this.cart = cart;
+        console.log(this.cart);
+      });
     this.server.getDates().subscribe((dates) => {
       console.log('dates: ', dates);
       this.dates = dates;

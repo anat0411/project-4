@@ -3,10 +3,15 @@
   <app-serach-in-cart></app-serach-in-cart>
 </div>
 <div class="row">
-  <div class="col-md-2"><app-cart-list></app-cart-list></div>
-  <div class="col-md-10 text-center">
+  <div class="col-md-6"><app-cart-list></app-cart-list></div>
+  <div class="col-md-1"></div>
+  <div class="col-md-4 text-center">
     <form [formGroup]="shippingDetails" (ngSubmit)="onOrderSubmit()">
-      <button routerLink="/products-list" routerLinkActive="active">
+      <button
+        routerLink="/products-list"
+        routerLinkActive="active"
+        class="btn btn-primary mb-3"
+      >
         Back to Products List
       </button>
       <h3>Shipping Details</h3>

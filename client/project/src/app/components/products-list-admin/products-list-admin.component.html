@@ -11,7 +11,7 @@
     </small>
   </button>
   <div class="row">
-    <div class="col-md-5 mb-3" *ngFor="let product of productsToShow">
+    <div class="col-md-3 mb-3" *ngFor="let product of productsToShow">
       <div class="card cardProduct">
         <div class="card-body">
           <fa-icon
@@ -20,10 +20,7 @@
             (click)="onEdit(product)"
           ></fa-icon>
           <p class="card-text text-center">
-            <small>Catrgory: {{ product.category_name }}</small>
-          </p>
-          <p>
-            <small>Product Id: {{ product.product_id }}</small>
+            <small>Category: {{ product.category_name }}</small>
           </p>
           <h5 class="card-title">{{ product.name }}</h5>
           <img
