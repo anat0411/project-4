@@ -1,4 +1,4 @@
-<h1 class="text-center">Hello {{ customer.firstName }}</h1>
+<h1 class="text-center" *ngIf="customer">Hello {{ customer.firstName }}</h1>
 <app-category-navbar></app-category-navbar>
 <div class="row">
   <div class="col-md-3 shadow-sm mr-3"><app-cart-list></app-cart-list></div>

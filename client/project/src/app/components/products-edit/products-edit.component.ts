@@ -1,15 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
-import {
-  FormGroup,
-  FormBuilder,
-  Validators,
-  FormControl,
-} from '@angular/forms';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormGroup, Validators, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { Product } from '../../models/product';
 import { ServerService } from 'src/app/services/server.service';
+import { FileUploader } from 'ng2-file-upload';
 
 @Component({
   selector: 'app-products-edit',
@@ -18,10 +14,20 @@ import { ServerService } from 'src/app/services/server.service';
 })
 export class ProductsEditComponent implements OnInit {
   @Input() product;
+  @Output() productChange = new EventEmitter<any>();
+  @Input() editingProduct;
+  @Output() editingProductChange = new EventEmitter<boolean>();
 
   showErrors: boolean = false;
   categories: any = null;
   loadingData: boolean = true;
+  environment = environment;
+  uploadingProduct: boolean = false;
+
+  public uploader: FileUploader = new FileUploader({
+    url: `${environment.baseUrl.server}/admin/upload_product_image`,
+    itemAlias: 'image',
+  });
 
   constructor(
     private router: Router,
@@ -32,6 +38,42 @@ export class ProductsEditComponent implements OnInit {
   ngOnInit(): void {
     console.log(this.product);
 
+    this.getCategories();
+    this.defineImageUploader();
+  }
+
+  defineImageUploader() {
+    this.uploader.onAfterAddingFile = (file) => {
+      file.withCredentials = true;
+    };
+    this.uploader.onCompleteItem = (
+      item: any,
+      response: any,
+      status: any,
+      headers: any
+    ) => {
+      // console.log('ImageUpload:uploaded: ', item, status, response);
+      console.log(JSON.parse(response).imagePath);
+
+      this.product.product_image = JSON.parse(response).imagePath;
+      this.updateProduct();
+    };
+  }
+
+  updateProduct() {
+    console.log(this.product);
+    console.log(this.product.product_id);
+    this.server
+      .updateProduct(this.product, this.product.product_id)
+      .subscribe((response) => {
+        console.log(response);
+        this.uploadingProduct = false;
+        this.editingProductChange.emit(false);
+        this.productChange.emit(this.product);
+      });
+  }
+
+  getCategories() {
     this.server.getCategories().subscribe((categories: [any]) => {
       console.log(categories);
 
@@ -46,7 +88,7 @@ export class ProductsEditComponent implements OnInit {
       this.editProductForm.setValue({
         productName: this.product.name,
         productPrice: this.product.product_price,
-        productImage: this.product.product_image,
+        productImage: '',
         productCategory: category.category_id,
       });
       this.loadingData = false;
@@ -68,44 +110,30 @@ export class ProductsEditComponent implements OnInit {
   });
 
   onFormSubmit() {
-    const productName = this.editProductForm.get('productName').value;
-    const productPrice = this.editProductForm.get('productPrice').value;
-    const productImage = this.editProductForm.get('productImage').value;
-    const productCategory = this.editProductForm.get('productCategory').value;
+    if (this.editProductForm.valid) {
+      this.showErrors = false;
+      this.uploadingProduct = true;
 
-    const data = {
-      name: productName,
-      product_price: productPrice,
-      product_image: productImage,
-      product_category: productCategory,
-    };
+      this.product.name = this.editProductForm.get('productName').value;
+      this.product.product_price = this.editProductForm.get(
+        'productPrice'
+      ).value;
+      this.product.product_category = this.editProductForm.get(
+        'productCategory'
+      ).value;
 
-    this.http
-      .post(
-        `${environment.baseUrl.server}/admin/edit/product/${this.product.product_id}`,
-        { productName, productPrice, productImage, productCategory },
-        {
-          withCredentials: true,
-        }
-      )
-      .subscribe(
-        (resp: any) => {
-          console.log(resp);
-          const productData = {
-            // name: resp.email,
-            // identification_number: resp.identification_number,
-            // customer_id_number: resp.customer_id_number,
-          };
-          // this.server.setProductDATA(productData);
+      const productImage = this.editProductForm.get('productImage').value;
 
-          console.log('LOGGED IN_____________');
-          console.log(productData, ' PRODUCT DATA');
-        },
-        (errorResp) => {
-          console.log(
-            'Oops, something went wrong getting the logged in status'
-          );
-        }
-      );
+      console.log(productImage);
+
+      if (!productImage) {
+        this.updateProduct();
+      } else {
+        this.uploader.uploadAll();
+        console.log(this.product);
+      }
+    } else {
+      this.showErrors = true;
+    }
   }
 }

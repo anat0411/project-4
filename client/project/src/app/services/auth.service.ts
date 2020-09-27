@@ -47,6 +47,7 @@ export class AuthService {
 
   setCustomer(data): void {
     console.log(data);
+    if (!data || data.role !== 'customer') return;
     window.sessionStorage.clear();
     window.sessionStorage.setItem(
       'identification_number',
@@ -64,6 +65,7 @@ export class AuthService {
     window.sessionStorage.setItem(
       'isCustomerLoggedIn',
       (
+        data &&
         data.email &&
         data.email !== 'null' &&
         data.email !== 'undefined'
@@ -88,11 +90,11 @@ export class AuthService {
   }
 
   getCustomerDataFromSession() {
-    const identification_number = window.sessionStorage.getItem(
-      'identification_number'
+    const identification_number = parseInt(
+      window.sessionStorage.getItem('identification_number')
     );
-    const customer_id_number = window.sessionStorage.getItem(
-      'customer_id_number'
+    const customer_id_number = parseInt(
+      window.sessionStorage.getItem('customer_id_number')
     );
     const city = window.sessionStorage.getItem('city');
     const street = window.sessionStorage.getItem('street');
@@ -102,7 +104,7 @@ export class AuthService {
     const isCustomerLoggedIn = window.sessionStorage.getItem(
       'isCustomerLoggedIn'
     );
-    this.setCustomer({
+    const customer = {
       identification_number,
       email,
       customer_id_number,
@@ -111,7 +113,9 @@ export class AuthService {
       firstName: firstName,
       lastName: lastName,
       isCustomerLoggedIn: isCustomerLoggedIn,
-    });
+    };
+    this.setCustomer(customer);
+    return customer;
   }
 
   getAdminDataFromSession() {

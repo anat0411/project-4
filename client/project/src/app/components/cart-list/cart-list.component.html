@@ -6,12 +6,12 @@
     (click)="onRemoveCart(cart.id)"
     *ngIf="showEditItems"
   ></fa-icon>
-  <div *ngIf="!cart || cart.items.length === 0">
+  <div *ngIf="!cart || !cart.items || cart.items.length === 0">
     Your cart is empty
     <br />
     Add products from products list on the right
   </div>
-  <div *ngIf="cart && cart.items.length > 0">
+  <div *ngIf="cart && cart.items && cart.items.length > 0">
     <div class="row" *ngFor="let item of cartItems">
       <div class="card cart-product-card shadow-sm mt-3">
         <div class="card-body product-card">
@@ -25,7 +25,7 @@
             ></fa-icon>
             <img
               class="card-img-top"
-              src="{{ item.product_image }}"
+              src="{{ environment.baseUrl.images + item.product_image }}"
               alt="Card image cap"
             />
             <p class="card-text">units: {{ item.product_units }}</p>

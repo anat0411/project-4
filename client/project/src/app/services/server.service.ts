@@ -143,6 +143,21 @@ export class ServerService {
     );
   }
 
+  updateProduct(data, product_id) {
+    const body = data;
+    console.log(body);
+    return this.http.put(
+      `${environment.baseUrl.server}/admin/edit/product/${product_id}`,
+      body,
+      {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+  }
+
   getDates() {
     return this.http.get(`${environment.baseUrl.server}/get/delivery/dates`, {
       withCredentials: true,
@@ -168,6 +183,7 @@ export class ServerService {
   // }
 
   getCart(id) {
+    console.log(id);
     return this.http.get(`${environment.baseUrl.server}/cart/${id}`, {
       withCredentials: true,
       headers: {

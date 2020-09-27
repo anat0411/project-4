@@ -36,10 +36,9 @@ export class ProductsListComponent implements OnInit {
         this.loadInitDataFromServer();
       }
     });
-    this.auth.getCustomer().subscribe((customer) => {
-      this.customer = customer;
-      console.log(customer);
-    });
+    this.customer = this.auth.getCustomerDataFromSession();
+    console.log(this.customer);
+
     this.server.getSearchString().subscribe((search) => {
       console.log(search);
       this.searchString = search;

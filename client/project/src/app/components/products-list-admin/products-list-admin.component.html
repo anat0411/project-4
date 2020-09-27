@@ -40,5 +40,8 @@
   </div>
 </div>
 <div *ngIf="editingProduct">
-  <app-products-edit [product]="productToEdit"></app-products-edit>
+  <app-products-edit
+    [(product)]="productToEdit"
+    [(editingProduct)]="editingProduct"
+  ></app-products-edit>
 </div>

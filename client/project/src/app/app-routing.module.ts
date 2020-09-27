@@ -20,7 +20,7 @@ export class OnlyLoggedInCustomer implements CanActivate {
     if (this.auth.isCustomerAuthenticated()) {
       return true;
     }
-    this.router.navigateByUrl('/login');
+    this.router.navigateByUrl('/');
     return false;
   }
 }
@@ -30,10 +30,11 @@ export class OnlyLoggedInAdmin implements CanActivate {
   constructor(private auth: AuthService, private router: Router) {}
 
   canActivate() {
+    console.log(this.auth.isAdminAuthenticated());
     if (this.auth.isAdminAuthenticated()) {
       return true;
     }
-    this.router.navigateByUrl('/login');
+    this.router.navigateByUrl('/');
     return false;
   }
 }

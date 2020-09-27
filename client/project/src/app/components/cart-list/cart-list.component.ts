@@ -8,6 +8,7 @@ import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { faRecycle } from '@fortawesome/free-solid-svg-icons';
 import { Product } from 'src/app/models/product';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-cart-list',
@@ -30,6 +31,7 @@ export class CartListComponent implements OnInit, OnDestroy {
   totalPrice = null;
   searchString: String = null;
   showEditItems: boolean = true;
+  environment = environment;
 
   ngOnInit(): void {
     console.log('Init');
@@ -59,11 +61,11 @@ export class CartListComponent implements OnInit, OnDestroy {
           }
         });
     }
-    this.auth.getCustomer().subscribe((customer) => {
-      this.customer = customer;
-      console.log(this.customer);
+    this.customer = this.auth.getCustomerDataFromSession();
+    console.log(this.customer);
+    if (this.customer) {
       this.loadCart(this.customer.customer_id_number);
-    });
+    }
 
     this.server.getCartSearchString().subscribe((search) => {
       console.log(search);
@@ -82,6 +84,9 @@ export class CartListComponent implements OnInit, OnDestroy {
   }
 
   calculateTotalPrice(cart) {
+    if (!cart || !cart.items || cart.items.lenght === 0) {
+      return 0;
+    }
     let totalPrice = 0;
     cart.items.forEach((item) => {
       totalPrice = totalPrice + item.item_price;

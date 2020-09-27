@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ServerService } from '../../services/server.service';
 import { Product } from '../../models/product';
-import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -30,6 +29,6 @@ export class ProductsListAdminComponent implements OnInit {
 
   onEdit(product) {
     this.editingProduct = true;
-    this.productToEdit = product
+    this.productToEdit = product;
   }
 }

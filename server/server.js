@@ -141,6 +141,7 @@ app.route("/api/login").post((req, res) => {
             console.log("SESSION LOGIN ====================", req.session);
             res.json({
               success: true,
+              role: "customer",
               ...results[0],
             });
           } else {
@@ -201,6 +202,7 @@ app.route("/api/admin/login").post((req, res) => {
             };
             res.json({
               success: true,
+              role: "admin",
               email: email,
               id: id,
             });
@@ -405,7 +407,7 @@ app.route("/api/admin/get_categories").get(isAdminAuth, (req, res) => {
 app.route("/api/cart/:customerid").get((req, res) => {
   const customer_id_number = req.params.customerid;
 
-  if (!customer_id_number || typeof customer_id_number != "number") {
+  if (!customer_id_number) {
     return res.json({
       success: false,
       msg: "Missing data GET CART CUSTOMER ID",
@@ -541,62 +543,59 @@ app.route("/api/admin/edit/product/:id").get(isAdminAuth, (req, res) => {
   });
 });
 
-app
-  .route("/api/admin/edit/product/:id")
-  .put(upload.single("image"), isAdminAuth, (req, res) => {
-    const { name, category_id, product_price } = req.body;
-    const product_image = req.file;
-    const id = req.params.id;
+app.route("/api/admin/edit/product/:id").put(isAdminAuth, (req, res) => {
+  const { name, category_id, product_price, product_image } = req.body;
+  const id = req.params.id;
 
-    if (
-      !name ||
-      !id ||
-      !category_id ||
-      !product_price ||
-      !product_image ||
-      typeof name != "string" ||
-      typeof id != "number" ||
-      typeof category_id != "number" ||
-      typeof product_price != "number" ||
-      typeof product_image != "string"
-    ) {
-      return res.json({ success: false, msg: "Missing fields EDIT product" });
-    }
+  // if (
+  //   !name ||
+  //   !id ||
+  //   !category_id ||
+  //   !product_price ||
+  //   !product_image ||
+  //   typeof name != "string" ||
+  //   typeof id != "number" ||
+  //   typeof category_id != "number" ||
+  //   typeof product_price != "number" ||
+  //   typeof product_image != "string"
+  // ) {
+  //   return res.json({ success: false, msg: "Missing fields EDIT product" });
+  // }
 
-    if (product_image) {
-      pool.query(
-        `
-      UPDATE products SET name=?,category_id=? ,product_price=? ,product_image=? WHERE id=?
+  if (product_image) {
+    pool.query(
+      `
+      UPDATE products SET name=?,category_id=? ,product_price=? ,product_image=? WHERE product_id=?
       `,
-        [name, category_id, product_price, product_image.path, id],
-        (err, results) => {
-          if (err) throw err;
+      [name, category_id, product_price, product_image, id],
+      (err, results) => {
+        if (err) throw err;
 
-          if (results) {
-            res.json({ success: true });
-          } else {
-            res.json({ success: false });
-          }
+        if (results) {
+          res.json({ success: true });
+        } else {
+          res.json({ success: false });
         }
-      );
-    } else {
-      pool.query(
-        `
-      UPDATE products SET name=? category_id=? ,product_price=? WHERE id=?
+      }
+    );
+  } else {
+    pool.query(
+      `
+      UPDATE products SET name=? category_id=? ,product_price=? WHERE product_id=?
       `,
-        [name, category_id, product_price, id],
-        (err, results) => {
-          if (err) throw err;
+      [name, category_id, product_price, id],
+      (err, results) => {
+        if (err) throw err;
 
-          if (results) {
-            res.json({ success: true });
-          } else {
-            res.json({ success: false });
-          }
+        if (results) {
+          res.json({ success: true });
+        } else {
+          res.json({ success: false });
         }
-      );
-    }
-  });
+      }
+    );
+  }
+});
 
 app.route("/api/add/item/cart").post((req, res) => {
   const { product_id, cart_id, units } = req.body;
@@ -604,15 +603,13 @@ app.route("/api/add/item/cart").post((req, res) => {
 
   if (
     !product_id ||
-    !cart_id ||
     !units ||
     !customer_id_number ||
     typeof product_id != "number" ||
-    typeof cart_id != "number" ||
     typeof units != "number" ||
     typeof customer_id_number != "number"
   ) {
-    return res.json({ success: false, msg: "Missing fields EDIT product" });
+    return res.json({ success: false, msg: "Missing fields Add product" });
   }
 
   pool.query(

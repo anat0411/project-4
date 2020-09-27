@@ -99,7 +99,20 @@
               </div>
             </div>
           </div>
-          <button type="submit" class="btn btn-success">Add</button>
+          <button
+            type="submit"
+            class="btn btn-success"
+            [disabled]="uploadingProduct"
+          >
+            <div
+              class="spinner-border text-primary"
+              role="status"
+              *ngIf="uploadingProduct"
+            >
+              <span class="sr-only">Loading...</span>
+            </div>
+            Add
+          </button>
         </form>
       </div>
     </div>
