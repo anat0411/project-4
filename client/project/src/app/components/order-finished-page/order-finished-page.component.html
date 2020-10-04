@@ -1,12 +1,24 @@
-<h2>Thanks for your purchase!</h2>
+<button
+  routerLink="/products-list"
+  routerLinkActive="active"
+  class="btn btn-primary mb-3"
+>
+  Back to Products List
+</button>
+<h2 class="text-center">Thanks for your purchase!</h2>
 <div class="container">
-  <div class="row">
-    <div class="text-canter">Delivery Date:</div>
+  <div class="">
+    <div class="text-center">
+      Delivery Date: {{ this.orderSummary.deliveryData.delivery_date }}
+    </div>
   </div>
-  <div class="row">
-    <div class="text-canter">Delivery Address:</div>
+  <div class="">
+    <div class="text-center">
+      Delivery Address: {{ this.orderSummary.deliveryData.city }}
+      {{ this.orderSummary.deliveryData.street }}
+    </div>
   </div>
-  <div class="row">
-    <div class="text-canter">Receipt for Download</div>
+  <div class="">
+    <div class="text-center">Receipt is Downloading...</div>
   </div>
 </div>

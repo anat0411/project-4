@@ -23,7 +23,7 @@
           class="form-control"
           formControlName="city"
           id="city"
-          (dblclick)="setCity()"
+          (dblclick)="setData()"
         />
         <div
           *ngIf="shippingDetails.get('city').invalid && showErrors"
@@ -51,6 +51,7 @@
           class="form-control"
           formControlName="street"
           id="street"
+          (dblclick)="setData()"
         />
         <div
           *ngIf="shippingDetails.get('street').invalid && showErrors"
@@ -80,6 +81,7 @@
           id="deliveryDate"
           (change)="checkDates($event)"
           min="{{ dateMin }}"
+          (dblclick)="setData()"
         />
         <div
           *ngIf="shippingDetails.get('deliveryDate').invalid && showErrors"

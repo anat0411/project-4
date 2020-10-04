@@ -9,6 +9,7 @@ const { v4: uuid4 } = require("uuid");
 const path = require("path");
 const http = require("http").createServer(app);
 const bcrypt = require("bcrypt");
+const { parse } = require("path");
 
 const storage = multer.diskStorage({
   destination: "./uploads",
@@ -34,11 +35,6 @@ app.use(
 );
 
 app.use(function (req, res, next) {
-  console.log("cors -----------");
-  // Website you wish to allow to connect
-  // res.setHeader("Access-Control-Allow-Origin", "*");
-
-  // Request methods you wish to allow
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, OPTIONS, PUT, PATCH, DELETE"
@@ -50,11 +46,6 @@ app.use(function (req, res, next) {
     "Origin, X-Requested-With, Content-Type, Accept"
   );
 
-  // Set to true if you need the website to include cookies in the requests sent
-  // to the API (e.g. in case you use sessions)
-  // res.setHeader("Access-Control-Allow-Credentials", true);
-
-  // Pass to next layer of middleware
   next();
 });
 
@@ -74,7 +65,6 @@ app.use(
 app.use(express.json());
 
 const isCustomerAuth = (req, res, next) => {
-  console.log(req.session);
   if (req.session.user) {
     return next();
   }
@@ -99,13 +89,7 @@ app.route("/auth/admin/verify").get(isAdminAuth, (req, res) => {
 app.route("/api/login").post((req, res) => {
   const { email, password } = req.body;
 
-  if (
-    !email ||
-    !password ||
-    !email.includes("@") ||
-    typeof email != "string" ||
-    typeof password != "string"
-  ) {
+  if (!email || !password || !email.includes("@")) {
     return res.json({ success: false, msg: "Missing data" });
   }
 
@@ -117,7 +101,6 @@ app.route("/api/login").post((req, res) => {
     [email],
     (err, results) => {
       if (err) throw err;
-      console.log("RES --------------------------------", results);
 
       if (results.length) {
         const {
@@ -126,11 +109,9 @@ app.route("/api/login").post((req, res) => {
           customer_id_number,
           identification_number,
         } = results[0];
-        console.log(identification_number);
 
         bcrypt.compare(password, hash, (err, result) => {
           if (err) throw err;
-          console.log(result);
 
           if (result) {
             req.session.user = {
@@ -138,14 +119,12 @@ app.route("/api/login").post((req, res) => {
               customer_id_number: customer_id_number,
               identification_number: identification_number,
             };
-            console.log("SESSION LOGIN ====================", req.session);
             res.json({
               success: true,
               role: "customer",
               ...results[0],
             });
           } else {
-            console.log("Err");
             res.json({ success: false });
           }
         });
@@ -168,13 +147,7 @@ app.get("/api/logout", isCustomerAuth, (req, res) => {
 app.route("/api/admin/login").post((req, res) => {
   const { email, password } = req.body;
 
-  if (
-    !email ||
-    !password ||
-    !email.includes("@") ||
-    typeof email != "string" ||
-    typeof password != "string"
-  ) {
+  if (!email || !password || !email.includes("@")) {
     return res.json({ success: false, msg: "Missing data" });
   }
 
@@ -192,7 +165,6 @@ app.route("/api/admin/login").post((req, res) => {
 
         bcrypt.compare(password, hash, (err, result) => {
           if (err) throw err;
-          console.log(result);
 
           // success login
           if (result) {
@@ -207,7 +179,6 @@ app.route("/api/admin/login").post((req, res) => {
               id: id,
             });
           } else {
-            console.log("Err");
             res.json({ success: false });
           }
         });
@@ -237,6 +208,7 @@ app.route("/api/register").post((req, res) => {
     city,
     street,
   } = req.body;
+
   if (
     !firstName ||
     !lastName ||
@@ -245,25 +217,12 @@ app.route("/api/register").post((req, res) => {
     !password ||
     !city ||
     !street ||
-    typeof firstName != "string" ||
-    typeof lastName != "string" ||
-    typeof email != "string" ||
-    typeof identification_number != "number" ||
-    typeof password != "string" ||
-    typeof city != "string" ||
-    typeof street != "string" ||
     !email.includes("@")
   ) {
     return res.json({ success: false, msg: "Missing data" });
   }
 
-  if (
-    !email ||
-    !password ||
-    !email.includes("@") ||
-    typeof email != "string" ||
-    typeof password != "string"
-  ) {
+  if (!email || !password || !email.includes("@")) {
     return res.json({ success: false, msg: "Missing data" });
   }
 
@@ -303,11 +262,6 @@ app.route("/api/admin/register").post((req, res) => {
     !email ||
     !adminIdNumber ||
     !password ||
-    typeof firstName != "string" ||
-    typeof lastName != "string" ||
-    typeof email != "string" ||
-    typeof adminIdNumber != "number" ||
-    typeof password != "string" ||
     !email.includes("@")
   ) {
     return res.json({ success: false, msg: "Missing fields" });
@@ -351,7 +305,6 @@ app.route("/api/products").get(isCustomerAuth, (req, res) => {
     (err, results, fields) => {
       if (err) throw err;
       res.json(results);
-      // console.log(results[0].name);
     }
   );
 });
@@ -367,14 +320,13 @@ app.route("/api/admin/products").get(isAdminAuth, (req, res) => {
     (err, results, fields) => {
       if (err) throw err;
       res.json(results);
-      // console.log(results[0].name);
     }
   );
 });
 
 app.route("/api/:category").get(isCustomerAuth, (req, res) => {
   const category = req.params.category;
-  if (!category || typeof category != "string") {
+  if (!category) {
     return res.json({ success: false, msg: "Missing data GET CATEGORY" });
   }
   pool.query(
@@ -414,7 +366,6 @@ app.route("/api/cart/:customerid").get((req, res) => {
     });
   }
 
-  console.log("customer id number -----------------------", customer_id_number);
   pool.query(
     `SELECT * from carts WHERE customer_id_number=? `,
     [customer_id_number],
@@ -438,7 +389,6 @@ app.route("/api/cart/:customerid").get((req, res) => {
               id: cart_id,
               items: results_2,
             };
-            // console.log(cart);
             res.json(cart);
           }
         );
@@ -462,18 +412,9 @@ app.route("/api/products/search/:input").get(isCustomerAuth, (req, res) => {
 app.route("/api/admin/add/product").post(isAdminAuth, (req, res) => {
   const { name, category_id, product_price, product_image } = req.body;
 
-  // if (
-  //   !name ||
-  //   !category_id ||
-  //   !product_price ||
-  //   !product_image ||
-  //   typeof name != "string" ||
-  //   typeof category_id != "number" ||
-  //   typeof product_price != "number" ||
-  //   typeof product_image != "string"
-  // ) {
-  //   return res.json({ success: false, msg: "Missing data ADD PRODUCT " });
-  // }
+  if (!name || !category_id || !product_price || !product_image) {
+    return res.json({ success: false, msg: "Missing data ADD PRODUCT " });
+  }
 
   pool.query(
     `
@@ -497,32 +438,12 @@ app
   .post(upload.single("image"), isAdminAuth, (req, res) => {
     const product_image = req.file;
 
-    console.log("*************", product_image);
-
-    if (!product_image || typeof product_image.path != "string") {
+    if (!product_image) {
       return res.json({
         success: false,
         msg: "Missing data ADD PRODUCT IMAGE",
       });
     }
-
-    console.log(product_image.path);
-
-    // pool.query(
-    //   `
-    // INSERT INTO products (name, category_id, product_price, product_image)
-    // VALUES (?,?,?,?)
-    //       `,
-    //   [product_image.path],
-    //   (err, results) => {
-    //     if (err) throw err;
-    //     if (results) {
-    //       res.json({ success: true });
-    //     } else {
-    //       res.json({ success: false });
-    //     }
-    //   }
-    // );
 
     return res.json({
       success: true,
@@ -533,7 +454,7 @@ app
 app.route("/api/admin/edit/product/:id").get(isAdminAuth, (req, res) => {
   const id = req.params.id;
 
-  if (!id || typeof id != "number") {
+  if (!id) {
     return res.json({ success: false, msg: "Missing data EDIT PRODUCT ID " });
   }
 
@@ -547,20 +468,9 @@ app.route("/api/admin/edit/product/:id").put(isAdminAuth, (req, res) => {
   const { name, category_id, product_price, product_image } = req.body;
   const id = req.params.id;
 
-  // if (
-  //   !name ||
-  //   !id ||
-  //   !category_id ||
-  //   !product_price ||
-  //   !product_image ||
-  //   typeof name != "string" ||
-  //   typeof id != "number" ||
-  //   typeof category_id != "number" ||
-  //   typeof product_price != "number" ||
-  //   typeof product_image != "string"
-  // ) {
-  //   return res.json({ success: false, msg: "Missing fields EDIT product" });
-  // }
+  if (!name || !id || !category_id || !product_price || !product_image) {
+    return res.json({ success: false, msg: "Missing fields EDIT product" });
+  }
 
   if (product_image) {
     pool.query(
@@ -601,14 +511,7 @@ app.route("/api/add/item/cart").post((req, res) => {
   const { product_id, cart_id, units } = req.body;
   const customer_id_number = req.session.user.customer_id_number;
 
-  if (
-    !product_id ||
-    !units ||
-    !customer_id_number ||
-    typeof product_id != "number" ||
-    typeof units != "number" ||
-    typeof customer_id_number != "number"
-  ) {
+  if (!product_id || !units || !customer_id_number) {
     return res.json({ success: false, msg: "Missing fields Add product" });
   }
 
@@ -618,7 +521,6 @@ app.route("/api/add/item/cart").post((req, res) => {
     (err, results) => {
       if (err) throw err;
       const product = JSON.parse(JSON.stringify(results))[0];
-      console.log("product ------- :", product);
       if (results) {
         pool.query(
           `SELECT * FROM carts WHERE cart_id=?`,
@@ -626,7 +528,6 @@ app.route("/api/add/item/cart").post((req, res) => {
           (err_2, results_2) => {
             if (err_2) throw err_2;
             const cart = JSON.parse(JSON.stringify(results_2));
-            console.log("Cart ---- ", cart);
             if (cart.length > 0) {
               pool.query(
                 `
@@ -650,15 +551,7 @@ app.route("/api/add/item/cart").post((req, res) => {
                       return res.json({ success: true });
                     }
                   });
-                  console.log("  ADDED-----------------", added);
                   if (!added) {
-                    console.log(
-                      "query data : ",
-                      product_id,
-                      1,
-                      product.product_price,
-                      cart_id
-                    );
                     pool.query(
                       `INSERT INTO cart_items (product_id, product_units, item_price, cart_id) VALUES (?,?,?,?)`,
                       [
@@ -676,16 +569,11 @@ app.route("/api/add/item/cart").post((req, res) => {
                 }
               );
             } else {
-              console.log(
-                "customer id number -------------------",
-                customer_id_number
-              );
               pool.query(
                 `INSERT INTO carts (customer_id_number) VALUES (?)`,
                 [customer_id_number],
                 (err_4, results_4) => {
                   if (err_4) throw err_4;
-                  console.log("new cart: +++++++++++", results_4.insertId);
                   if (results_4) {
                     pool.query(
                       `INSERT INTO cart_items (product_id, product_units, item_price, cart_id) VALUES (?,?,?,?)`,
@@ -697,7 +585,6 @@ app.route("/api/add/item/cart").post((req, res) => {
                       ],
                       (err_5, results_5) => {
                         if (err_5) throw err_5;
-                        console.log(results_5);
                         return res.json({ success: true });
                       }
                     );
@@ -714,10 +601,9 @@ app.route("/api/add/item/cart").post((req, res) => {
 
 app.route("/api/delete/cart/:id").delete(isCustomerAuth, (req, res) => {
   const id = req.params.id;
-  if (typeof id != "number") {
-    return res.json({ success: false, msg: "ID NOT A NUMBER" });
+  if (!id) {
+    return res.json({ success: false, msg: "No ID" });
   }
-  console.log(id);
   pool.query(`DELETE FROM cart_items WHERE cart_id=? `, id, (err, results) => {
     if (err) throw err;
 
@@ -727,7 +613,6 @@ app.route("/api/delete/cart/:id").delete(isCustomerAuth, (req, res) => {
         [id],
         (err, results) => {
           if (err) throw err;
-          console.log("SUCCESS TRUE ---------------------------");
           res.json({ success: true });
         }
       );
@@ -739,7 +624,7 @@ app.route("/api/delete/cart/:id").delete(isCustomerAuth, (req, res) => {
 
 app.route("/api/delete/cart/item/:id").delete(isCustomerAuth, (req, res) => {
   const id = req.params.id;
-  if (!id || typeof id != "number") {
+  if (!id) {
     return res.json({ success: false, msg: "Missing data DELETE CART ID" });
   }
   pool.query(
@@ -783,7 +668,7 @@ app.route("/api/get/delivery/dates").get(isCustomerAuth, (req, res) => {
 
 app.route("/api/order/cart/:id").post(isCustomerAuth, (req, res) => {
   const id = req.params.id;
-  if (!id || typeof id != "number") {
+  if (!id) {
     return res.json({ success: false, msg: "Missing data ORDER CART ID" });
   }
   pool.query(
@@ -792,9 +677,7 @@ app.route("/api/order/cart/:id").post(isCustomerAuth, (req, res) => {
     [id],
     (err, results) => {
       if (err) throw err;
-
       if (results) {
-        console.log("RESULTS ", results[0].cart_total_price);
         const total_price = results[0].cart_total_price;
         const { customer_id_number, city, street, delivery_date } = req.body;
         if (
@@ -803,12 +686,7 @@ app.route("/api/order/cart/:id").post(isCustomerAuth, (req, res) => {
           !city ||
           !street ||
           !delivery_date ||
-          !total_price ||
-          typeof customer_id_number != "number" ||
-          typeof total_price != "number" ||
-          typeof city != "string" ||
-          typeof street != "string" ||
-          typeof delivery_date != "string"
+          !total_price
         ) {
           return res.json({ success: false, msg: "Missing fields ORDER" });
         }
@@ -818,9 +696,7 @@ app.route("/api/order/cart/:id").post(isCustomerAuth, (req, res) => {
           [customer_id_number, total_price, city, street, delivery_date],
           (err_2, results_2) => {
             if (err_2) throw err_2;
-
             if (results_2) {
-              console.log(results_2);
               pool.query(
                 `DELETE FROM cart_items where cart_id=?
                 `,
@@ -835,7 +711,7 @@ app.route("/api/order/cart/:id").post(isCustomerAuth, (req, res) => {
                       [id],
                       (err_4, results_4) => {
                         if (err_4) throw err_4;
-                        console.log(results_4);
+
                         res.json({ success: true });
                       }
                     );

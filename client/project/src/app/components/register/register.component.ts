@@ -95,9 +95,9 @@ export class RegisterComponent implements OnInit {
       street,
       identification_number,
       password,
+      customer_id_number: null,
+      role: 'customer',
     };
-
-    console.log(customerData);
 
     this.http
       .post(`${environment.baseUrl.server}/register`, customerData, {
@@ -107,6 +107,7 @@ export class RegisterComponent implements OnInit {
         (resp: any) => {
           console.log(resp);
           // const customerData = { email: resp.email, id: resp.id };
+          customerData.customer_id_number = resp.msg;
           this.auth.setCustomer(customerData);
 
           console.log('registered_____________');

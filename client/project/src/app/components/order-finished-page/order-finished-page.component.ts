@@ -16,41 +16,79 @@ export class OrderFinishedPageComponent implements OnInit {
       console.log(orderSummary);
     });
 
-    let items = null;
     let itemsPrices = [];
     let totatPurchasePrice = null;
+    let items = this.orderSummary.cart.items;
+
+    console.log(
+      items.map(() => {
+        return { itemsText: 'line' };
+      })
+    );
 
     itemsPrices = this.orderSummary.cart.items.map((item) => {
       return item.item_price;
     });
 
-    for (let i = 0; i < this.orderSummary.cart.items.length; i++) {
-      console.log(this.orderSummary.cart.items[i]);
-      items = this.orderSummary.cart.items[i];
-      console.log(items);
-    }
-
     totatPurchasePrice = itemsPrices.reduce((a, b) => a + b, 0);
 
-    console.log(totatPurchasePrice);
-
     let dataForDownload = [
-      { Title: 'Thank You For Your Purchase!' },
-      { questions: 'for any questions, please write us' },
-      { email: 'shop@example.com' },
-      { totalPriceText: 'Total Price: ' },
-      { totalPrice: totatPurchasePrice },
-      { itemsText: 'Items: ' },
-      { name: items.name },
-      { itemPriceText: 'Item Price: ' },
-      { price: items.item_price },
-      { itemUnits: 'Item Units: ' },
-      { units: items.product_units },
+      { itemTitle: '' },
+      { itemsTitlePrice: '' },
+      { itemsTitleUnits: '' },
+      { itemsName: '' },
+      { itemsPrice: '' },
+      { itemsUnits: '' },
+      {
+        Title: 'Thank You For Your Purchase! ',
+      },
+      { questions: 'for any questions, please write us. ' },
+      {
+        email: 'freshmarket@fm.com',
+      },
+
+      { totalPriceText: 'Total Price: ', totalPrice: totatPurchasePrice },
+
       { deliveryInfoText: 'Delivery Information: ' },
-      { city: this.orderSummary.deliveryData.city },
-      { street: this.orderSummary.deliveryData.street },
-      { delivery_date: this.orderSummary.deliveryData.delivery_date },
+      { cityTitle: 'City: ', city: this.orderSummary.deliveryData.city },
+      {
+        streetTitle: 'Street: ',
+        street: this.orderSummary.deliveryData.street,
+      },
+      {
+        deliveryTitle: 'Delivery Date: ',
+        delivery_date: this.orderSummary.deliveryData.delivery_date,
+      },
+      { itemsTitle: '' },
     ];
+
+    items.forEach((item, index) => {
+      console.log(item);
+      let num = index + 1;
+
+      dataForDownload.push({
+        itemsTitle: 'Items',
+      });
+
+      dataForDownload.push({
+        itemTitle: 'Item Number ' + num + ': ',
+        itemsName: item.name,
+      });
+
+      dataForDownload.push({
+        itemsTitlePrice: 'Price: ',
+      });
+
+      dataForDownload.push({
+        itemsPrice: item.item_price,
+      });
+      dataForDownload.push({
+        itemsTitleUnits: 'Units: ',
+      });
+      dataForDownload.push({
+        itemsUnits: item.product_units,
+      });
+    });
 
     console.log(dataForDownload);
 
@@ -61,6 +99,6 @@ export class OrderFinishedPageComponent implements OnInit {
       showTitle: true,
       useBom: true,
     };
-    new Angular2Txt(dataForDownload, 'My Report', options);
+    new Angular2Txt(dataForDownload, 'My recepit', options);
   }
 }

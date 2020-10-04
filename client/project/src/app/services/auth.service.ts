@@ -60,8 +60,8 @@ export class AuthService {
     window.sessionStorage.setItem('email', data.email);
     window.sessionStorage.setItem('city', data.city);
     window.sessionStorage.setItem('street', data.street);
-    window.sessionStorage.setItem('firstName', data.firstname);
-    window.sessionStorage.setItem('lastName', data.lastname);
+    window.sessionStorage.setItem('firstName', data.firstName);
+    window.sessionStorage.setItem('lastName', data.lastName);
     window.sessionStorage.setItem(
       'isCustomerLoggedIn',
       (

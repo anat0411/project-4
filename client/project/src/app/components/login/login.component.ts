@@ -51,8 +51,6 @@ export class LoginComponent implements OnInit {
   onFormSubmit() {
     const email = this.loginForm.get('email').value;
     const password = this.loginForm.get('password').value;
-    console.log('email: ', email);
-    console.log('password: ', password);
 
     this.http
       .post(
@@ -69,11 +67,14 @@ export class LoginComponent implements OnInit {
             this.errorLogin = true;
           } else {
             this.errorLogin = false;
-            const customerData = resp;
+            const customerData = {
+              ...resp,
+              firstName: resp.firstname,
+              lastName: resp.lastname,
+            };
             this.auth.setCustomer(customerData);
 
             console.log('LOGGED IN_____________');
-            console.log(customerData, ' CUSTOMER DATA');
             this.onLogin();
           }
         },

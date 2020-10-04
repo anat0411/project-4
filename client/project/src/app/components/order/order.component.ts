@@ -60,7 +60,7 @@ export class OrderComponent implements OnInit {
     });
   }
 
-  setCity() {
+  setData() {
     console.log('set city');
     console.log(this.shippingDetails.get('city').value);
     console.log(this.shippingDetails.get('deliveryDate').value);
@@ -72,7 +72,7 @@ export class OrderComponent implements OnInit {
   }
 
   onOrder() {
-    console.log('order-----------------------');
+    console.log('onOrder-----------------------');
     this.router.navigateByUrl('order/finished');
   }
 
@@ -104,21 +104,23 @@ export class OrderComponent implements OnInit {
 
     console.log(orderSummary);
 
+    const id = this.cart.id;
+
     this.server.setOrderSummary(orderSummary);
 
     this.http
-      .post(
-        `${environment.baseUrl.server}/order/cart/${this.cart.id}`,
-        deliveryData,
-        {
-          withCredentials: true,
-        }
-      )
+      .post(`${environment.baseUrl.server}/order/cart/${id}`, deliveryData, {
+        withCredentials: true,
+      })
       .subscribe(
         (resp: any) => {
           console.log(resp);
-          const deliveryData = { email: resp.email, id: resp.id };
-
+          console.log(deliveryData);
+          console.log(
+            'URL ---------',
+            `${environment.baseUrl.server}/order/cart/${id}`,
+            deliveryData
+          );
           console.log('orderd------------------------');
           this.onOrder();
         },
@@ -141,8 +143,10 @@ export class OrderComponent implements OnInit {
 
     if (count > 2) {
       this.dateError = true;
+      console.log(count, '------TRUE');
     } else {
       this.dateError = false;
+      console.log(count, ' ----FALSE');
     }
   }
 }

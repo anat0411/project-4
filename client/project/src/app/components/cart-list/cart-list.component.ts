@@ -96,6 +96,8 @@ export class CartListComponent implements OnInit, OnDestroy {
   }
 
   loadCart(id) {
+    console.log(id);
+    console.log(this.cart);
     this.server.getCart(id).subscribe((data: any) => {
       this.cart = data;
       this.cartItems = data.items;
