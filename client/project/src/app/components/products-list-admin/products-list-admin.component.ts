@@ -23,7 +23,6 @@ export class ProductsListAdminComponent implements OnInit {
   ngOnInit(): void {
     this.server.getAllProductsAdmin().subscribe((data: Product[]) => {
       this.productsToShow = data;
-      console.log(this.productsToShow);
     });
   }
 

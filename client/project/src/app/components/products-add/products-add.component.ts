@@ -29,8 +29,6 @@ export class ProductsAddComponent implements OnInit {
 
   getCategories() {
     this.server.getCategories().subscribe((categories: [any]) => {
-      console.log(categories);
-
       this.categories = categories;
     });
   }
@@ -45,11 +43,8 @@ export class ProductsAddComponent implements OnInit {
       status: any,
       headers: any
     ) => {
-      // console.log('ImageUpload:uploaded: ', item, status, response);
-      console.log(JSON.parse(response).imagePath);
       this.product.product_image = JSON.parse(response).imagePath;
       this.server.addNewProduct(this.product).subscribe((response) => {
-        console.log(response);
         this.uploadingProduct = false;
         this.router.navigateByUrl('/products-list-admin');
       });

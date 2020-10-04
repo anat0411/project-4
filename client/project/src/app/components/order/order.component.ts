@@ -45,25 +45,18 @@ export class OrderComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log(this.dateMin);
     this.customer = this.auth.getCustomerDataFromSession();
-    console.log(this.customer);
     this.server
       .getCart(this.customer.customer_id_number)
       .subscribe((cart: Cart) => {
         this.cart = cart;
-        console.log(this.cart);
       });
     this.server.getDates().subscribe((dates) => {
-      console.log('dates: ', dates);
       this.dates = dates;
     });
   }
 
   setData() {
-    console.log('set city');
-    console.log(this.shippingDetails.get('city').value);
-    console.log(this.shippingDetails.get('deliveryDate').value);
     this.shippingDetails.setValue({
       city: this.customer.city,
       street: this.customer.street,
@@ -72,7 +65,6 @@ export class OrderComponent implements OnInit {
   }
 
   onOrder() {
-    console.log('onOrder-----------------------');
     this.router.navigateByUrl('order/finished');
   }
 
@@ -97,12 +89,7 @@ export class OrderComponent implements OnInit {
       customer_id_number: this.customer.customer_id_number,
     };
 
-    console.log(deliveryData);
-    console.log(this.cart);
-
     const orderSummary = { deliveryData, cart: this.cart };
-
-    console.log(orderSummary);
 
     const id = this.cart.id;
 
@@ -115,13 +102,7 @@ export class OrderComponent implements OnInit {
       .subscribe(
         (resp: any) => {
           console.log(resp);
-          console.log(deliveryData);
-          console.log(
-            'URL ---------',
-            `${environment.baseUrl.server}/order/cart/${id}`,
-            deliveryData
-          );
-          console.log('orderd------------------------');
+
           this.onOrder();
         },
         (errorResp) => {
@@ -133,7 +114,6 @@ export class OrderComponent implements OnInit {
   }
 
   checkDates(event) {
-    console.log(event.target.value);
     let count = 0;
     this.dates.forEach((date) => {
       if (event.target.value === date.delivery_date.slice(0, 10)) {
@@ -143,10 +123,8 @@ export class OrderComponent implements OnInit {
 
     if (count > 2) {
       this.dateError = true;
-      console.log(count, '------TRUE');
     } else {
       this.dateError = false;
-      console.log(count, ' ----FALSE');
     }
   }
 }

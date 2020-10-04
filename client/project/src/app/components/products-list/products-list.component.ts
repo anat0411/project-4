@@ -25,7 +25,6 @@ export class ProductsListComponent implements OnInit {
   environment = environment;
 
   ngOnInit(): void {
-    console.log(this.router.url);
     this.loadInitDataFromServer();
     this.server.getAllProducts().subscribe((data: [Product]) => {
       this.products = data;
@@ -37,10 +36,8 @@ export class ProductsListComponent implements OnInit {
       }
     });
     this.customer = this.auth.getCustomerDataFromSession();
-    console.log(this.customer);
 
     this.server.getSearchString().subscribe((search) => {
-      console.log(search);
       this.searchString = search;
       this.productsToShow = this.products.filter((product) => {
         return product.name
@@ -55,7 +52,6 @@ export class ProductsListComponent implements OnInit {
       case '/products-list':
         this.server.getAllProducts().subscribe((data: Product[]) => {
           this.productsToShow = data;
-          console.log(this.productsToShow);
         });
         break;
       case '/products-list/vegtables&fruits':
@@ -81,7 +77,6 @@ export class ProductsListComponent implements OnInit {
   }
 
   onAddToCart(product) {
-    console.log('add new product to cart: ', product);
     this.server.setNewCartProduct(product);
   }
 

@@ -13,7 +13,6 @@ export class SearchComponent implements OnInit {
   ngOnInit(): void {}
 
   onSearchChange(event) {
-    console.log(event.target.value);
     const searchString = event.target.value;
     this.server.setSearchString(searchString);
   }

@@ -34,8 +34,6 @@ export class CartListComponent implements OnInit, OnDestroy {
   environment = environment;
 
   ngOnInit(): void {
-    console.log('Init');
-
     if (this.router.url.includes('order')) {
       this.showEditItems = false;
     }
@@ -44,9 +42,7 @@ export class CartListComponent implements OnInit, OnDestroy {
       this.getNewProductSubscription = this.server
         .getNewCartProduct()
         .subscribe((newProduct) => {
-          console.log(newProduct);
           if (newProduct) {
-            // console.log(this.cart.id);
             this.server
               .addProductToCart(
                 newProduct.product_id,
@@ -55,22 +51,18 @@ export class CartListComponent implements OnInit, OnDestroy {
               )
               .subscribe((result) => {
                 this.loadCart(this.customer.customer_id_number);
-                console.log(result);
               });
             this.server.setNewCartProduct(null);
           }
         });
     }
     this.customer = this.auth.getCustomerDataFromSession();
-    console.log(this.customer);
     if (this.customer) {
       this.loadCart(this.customer.customer_id_number);
     }
 
     this.server.getCartSearchString().subscribe((search) => {
-      console.log(search);
       if (this.cart) {
-        console.log(search);
         this.searchString = search;
 
         this.cartItems = this.cart.items.filter((product) => {
@@ -91,24 +83,19 @@ export class CartListComponent implements OnInit, OnDestroy {
     cart.items.forEach((item) => {
       totalPrice = totalPrice + item.item_price;
     });
-    console.log('TOTAL PRICE  ---', totalPrice);
     this.totalPrice = totalPrice;
   }
 
   loadCart(id) {
-    console.log(id);
-    console.log(this.cart);
     this.server.getCart(id).subscribe((data: any) => {
       this.cart = data;
       this.cartItems = data.items;
-      console.log(this.cart);
       this.calculateTotalPrice(this.cart);
     });
   }
 
   onRemove(item) {
     this.server.removeItemFromCart(item).subscribe((data) => {
-      console.log(data);
       this.cart.items = data;
       this.calculateTotalPrice(this.cart);
     });
@@ -116,7 +103,6 @@ export class CartListComponent implements OnInit, OnDestroy {
 
   onRemoveCart(cartId) {
     this.server.removeAllCartItems(cartId).subscribe((data) => {
-      console.log(data);
       this.cart = null;
       this.totalPrice = 0;
     });

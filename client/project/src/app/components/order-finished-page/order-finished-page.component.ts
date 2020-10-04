@@ -13,18 +13,11 @@ export class OrderFinishedPageComponent implements OnInit {
   ngOnInit(): void {
     this.server.getOrderSummary().subscribe((orderSummary) => {
       this.orderSummary = orderSummary;
-      console.log(orderSummary);
     });
 
     let itemsPrices = [];
     let totatPurchasePrice = null;
     let items = this.orderSummary.cart.items;
-
-    console.log(
-      items.map(() => {
-        return { itemsText: 'line' };
-      })
-    );
 
     itemsPrices = this.orderSummary.cart.items.map((item) => {
       return item.item_price;
@@ -63,7 +56,6 @@ export class OrderFinishedPageComponent implements OnInit {
     ];
 
     items.forEach((item, index) => {
-      console.log(item);
       let num = index + 1;
 
       dataForDownload.push({
@@ -89,8 +81,6 @@ export class OrderFinishedPageComponent implements OnInit {
         itemsUnits: item.product_units,
       });
     });
-
-    console.log(dataForDownload);
 
     var options = {
       fieldSeparator: '   ',

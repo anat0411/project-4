@@ -43,15 +43,12 @@ export class LoginAdminComponent implements OnInit {
   ngOnInit(): void {}
 
   onAdminLogin() {
-    console.log('admin login');
     this.router.navigateByUrl('/products-list-admin');
   }
 
   onAdminFormSubmit() {
     const email = this.loginAdminForm.get('email').value;
     const password = this.loginAdminForm.get('password').value;
-    console.log('email: ', email);
-    console.log('password: ', password);
 
     this.http
       .post(
@@ -67,11 +64,9 @@ export class LoginAdminComponent implements OnInit {
             this.errorLogin = true;
           } else {
             this.errorLogin = false;
-            console.log(resp);
             const adminData = { email: resp.email, id: resp.id };
             this.auth.setAdmin(adminData);
 
-            console.log('ADMIN LOGGED IN_____________');
             this.onAdminLogin();
           }
         },

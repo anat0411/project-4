@@ -65,14 +65,11 @@ export class RegisterComponent implements OnInit {
   ngOnInit(): void {}
 
   onRegister() {
-    console.log('login');
     this.router.navigateByUrl('/products-list');
   }
 
   onRegisterSubmit() {
     this.showErrors = true;
-    console.log('form valide: ', !this.registerForm.invalid);
-    console.log(this.registerForm.get('firstName').invalid);
 
     if (this.registerForm.invalid) {
       return;
@@ -105,12 +102,9 @@ export class RegisterComponent implements OnInit {
       })
       .subscribe(
         (resp: any) => {
-          console.log(resp);
-          // const customerData = { email: resp.email, id: resp.id };
           customerData.customer_id_number = resp.msg;
           this.auth.setCustomer(customerData);
 
-          console.log('registered_____________');
           this.onRegister();
           this.router.navigateByUrl('/products-list');
         },

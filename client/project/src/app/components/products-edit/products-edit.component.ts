@@ -36,8 +36,6 @@ export class ProductsEditComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log(this.product);
-
     this.getCategories();
     this.defineImageUploader();
   }
@@ -52,21 +50,15 @@ export class ProductsEditComponent implements OnInit {
       status: any,
       headers: any
     ) => {
-      // console.log('ImageUpload:uploaded: ', item, status, response);
-      console.log(JSON.parse(response).imagePath);
-
       this.product.product_image = JSON.parse(response).imagePath;
       this.updateProduct();
     };
   }
 
   updateProduct() {
-    console.log(this.product);
-    console.log(this.product.product_id);
     this.server
       .updateProduct(this.product, this.product.product_id)
       .subscribe((response) => {
-        console.log(response);
         this.uploadingProduct = false;
         this.editingProductChange.emit(false);
         this.productChange.emit(this.product);
@@ -79,18 +71,13 @@ export class ProductsEditComponent implements OnInit {
 
   getCategories() {
     this.server.getCategories().subscribe((categories: [any]) => {
-      console.log(categories);
-      console.log(this.product);
       this.categories = categories;
       let category = null;
       categories.forEach((c) => {
-        console.log(c);
-
         if (c.category_id.toString() === this.product.category_id.toString()) {
           category = c;
         }
       });
-      console.log(category);
       this.editProductForm.setValue({
         productName: this.product.name,
         productPrice: this.product.product_price,
@@ -102,8 +89,6 @@ export class ProductsEditComponent implements OnInit {
   }
 
   getCategoryNameById(id) {
-    console.log(id);
-    console.log(this.categories);
     let category_name = null;
     this.categories.forEach((c) => {
       if (c.category_id.toString() === id.toString()) {
@@ -145,13 +130,10 @@ export class ProductsEditComponent implements OnInit {
 
       const productImage = this.editProductForm.get('productImage').value;
 
-      console.log(productImage);
-
       if (!productImage) {
         this.updateProduct();
       } else {
         this.uploader.uploadAll();
-        console.log(this.product);
       }
     } else {
       this.showErrors = true;

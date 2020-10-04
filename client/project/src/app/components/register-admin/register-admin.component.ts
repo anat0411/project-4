@@ -53,14 +53,11 @@ export class RegisterAdminComponent implements OnInit {
   ngOnInit(): void {}
 
   onAdminRegister() {
-    console.log('login admin');
     this.router.navigateByUrl('/products-list-admin');
   }
 
   onAdminRegisterSubmit() {
     this.showErrors = true;
-    console.log('form valide: ', !this.registerForm.invalid);
-    console.log(this.registerForm.get('firstName').invalid);
 
     if (this.registerForm.invalid) {
       return;
@@ -80,19 +77,14 @@ export class RegisterAdminComponent implements OnInit {
       password,
     };
 
-    console.log(adminData);
-
     this.http
       .post(`${environment.baseUrl.server}/admin/register`, adminData, {
         withCredentials: true,
       })
       .subscribe(
         (resp: any) => {
-          console.log(resp);
-          // const adminData = { email: resp.email, id: resp.id };
           this.auth.setAdmin(adminData);
 
-          console.log('registered_____________');
           this.onAdminRegister();
         },
         (errorResp) => {

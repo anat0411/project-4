@@ -12,14 +12,11 @@ export class LoginRegisterNavbarComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  onLogin() {
-    console.log('login');
-  }
+  onLogin() {}
 
   onLogout() {
     window.sessionStorage.clear();
     this.router.navigateByUrl('/login');
-    console.log('.sessionStorage : ', window.sessionStorage);
     this.auth.logout().subscribe((data) => {
       console.log(data);
     });
@@ -27,7 +24,6 @@ export class LoginRegisterNavbarComponent implements OnInit {
 
   onAdminLogout() {
     this.auth.adminLogout().subscribe((data) => {
-      console.log(data);
       window.sessionStorage.clear();
       this.router.navigateByUrl('/admin/login');
     });

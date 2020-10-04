@@ -44,7 +44,6 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {}
 
   onLogin() {
-    console.log('login');
     this.router.navigateByUrl('/products-list');
   }
 
@@ -62,7 +61,6 @@ export class LoginComponent implements OnInit {
       )
       .subscribe(
         (resp: any) => {
-          console.log(resp);
           if (!resp.success) {
             this.errorLogin = true;
           } else {
@@ -74,7 +72,6 @@ export class LoginComponent implements OnInit {
             };
             this.auth.setCustomer(customerData);
 
-            console.log('LOGGED IN_____________');
             this.onLogin();
           }
         },
